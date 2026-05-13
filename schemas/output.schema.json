@@ -70,6 +70,27 @@
         }
       }
     },
+    "quality_checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "status"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": ["links", "html_sanity", "responsive_layout", "asset_independence", "visual_consistency"]
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pass", "fail", "not_run"]
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "risks": {
       "type": "array",
       "items": {
