@@ -1,0 +1,19 @@
+name: paper-webpage-builder
+version: 0.1.0
+description: Build polished single-page academic project webpages from paper sources, figures, references, and validation scripts.
+prompts:
+  skill: SKILL.md
+  module_patterns: references/module_patterns.md
+  design_principles: references/design_principles.md
+schemas:
+  input: schemas/input.schema.json
+  output: schemas/output.schema.json
+tests:
+  golden: tests/golden.jsonl
+runtime:
+  model: configurable
+  temperature: 0
+tags:
+  - codex-skill
+  - paper-webpage
+  - sithub
