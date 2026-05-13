@@ -1,0 +1,8 @@
+interface:
+  display_name: "Paper Webpage Builder"
+  short_description: "Build polished webpages from paper projects."
+  brand_color: "#2563A8"
+  default_prompt: "Use $paper-webpage-builder to create a project webpage from this paper directory."
+
+policy:
+  allow_implicit_invocation: true
