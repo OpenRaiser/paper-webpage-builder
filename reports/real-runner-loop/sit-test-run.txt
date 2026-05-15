@@ -1,0 +1,7 @@
+OK  latex-project-page: runner produced actual
+OK  latex-project-page: partial match passed
+OK  pdf-with-assets-page: runner produced actual
+OK  pdf-with-assets-page: partial match passed
+OK  existing-webpage-refresh: runner produced actual
+OK  existing-webpage-refresh: partial match passed
+SUMMARY 3/3 golden cases passed

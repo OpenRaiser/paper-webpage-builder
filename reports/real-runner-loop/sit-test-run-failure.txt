@@ -1,0 +1,7 @@
+OK  latex-project-page: runner produced actual
+ERR latex-project-page: actual failed schema validation at <root>: 123 is not of type 'object'
+OK  pdf-with-assets-page: runner produced actual
+ERR pdf-with-assets-page: actual failed schema validation at <root>: 123 is not of type 'object'
+OK  existing-webpage-refresh: runner produced actual
+ERR existing-webpage-refresh: actual failed schema validation at <root>: 123 is not of type 'object'
+SUMMARY 0/3 golden cases passed

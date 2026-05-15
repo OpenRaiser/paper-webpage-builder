@@ -10,6 +10,8 @@ schemas:
   output: schemas/output.schema.json
 tests:
   golden: tests/golden.jsonl
+commands:
+  run_case: "python3 scripts/sit_run_case.py --input {input} --output {output}"
 runtime:
   model: configurable
   temperature: 0
