@@ -1,0 +1,10 @@
+PACKAGE paper-webpage-builder@0.2.0 -> paper-webpage-builder@0.3.0
+MANIFEST changed version: '0.2.0' -> '0.3.0'
+PROMPT changed skill: SKILL.md -> SKILL.md
+SCHEMA changed output: output.schema.json -> output.schema.json
+SCHEMA output property added keywords (optional)
+TEST changed golden: golden.jsonl -> golden.jsonl
+GOLDEN expected changed existing-webpage-refresh
+GOLDEN expected changed latex-project-page
+GOLDEN expected changed pdf-with-assets-page
+RISK review-required

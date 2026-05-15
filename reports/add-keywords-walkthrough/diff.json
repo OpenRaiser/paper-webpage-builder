@@ -1,0 +1,105 @@
+{
+  "schema_version": "sit.diff.v1",
+  "old": {
+    "name": "paper-webpage-builder",
+    "version": "0.2.0",
+    "root": "/tmp/paper-webpage-builder-test/head",
+    "manifest": "/tmp/paper-webpage-builder-test/head/skill.yaml",
+    "source": "/tmp/paper-webpage-builder-test/head"
+  },
+  "new": {
+    "name": "paper-webpage-builder",
+    "version": "0.3.0",
+    "root": "/mnt/shared-storage-user/xuxinglong-p/paper-webpage-builder",
+    "manifest": "/mnt/shared-storage-user/xuxinglong-p/paper-webpage-builder/skill.yaml",
+    "source": "."
+  },
+  "changed": true,
+  "breaking": false,
+  "risk": "review-required",
+  "suggested_bump": "minor",
+  "messages": [
+    "PACKAGE paper-webpage-builder@0.2.0 -> paper-webpage-builder@0.3.0",
+    "MANIFEST changed version: '0.2.0' -> '0.3.0'",
+    "PROMPT changed skill: SKILL.md -> SKILL.md",
+    "SCHEMA changed output: output.schema.json -> output.schema.json",
+    "SCHEMA output property added keywords (optional)",
+    "TEST changed golden: golden.jsonl -> golden.jsonl",
+    "GOLDEN expected changed existing-webpage-refresh",
+    "GOLDEN expected changed latex-project-page",
+    "GOLDEN expected changed pdf-with-assets-page",
+    "RISK review-required"
+  ],
+  "events": [
+    {
+      "category": "package",
+      "severity": "info",
+      "changed": false,
+      "breaking": false,
+      "message": "PACKAGE paper-webpage-builder@0.2.0 -> paper-webpage-builder@0.3.0"
+    },
+    {
+      "category": "manifest",
+      "severity": "changed",
+      "changed": true,
+      "breaking": false,
+      "message": "MANIFEST changed version: '0.2.0' -> '0.3.0'"
+    },
+    {
+      "category": "prompt",
+      "severity": "changed",
+      "changed": true,
+      "breaking": false,
+      "message": "PROMPT changed skill: SKILL.md -> SKILL.md"
+    },
+    {
+      "category": "schema",
+      "severity": "changed",
+      "changed": true,
+      "breaking": false,
+      "message": "SCHEMA changed output: output.schema.json -> output.schema.json"
+    },
+    {
+      "category": "schema",
+      "severity": "changed",
+      "changed": true,
+      "breaking": false,
+      "message": "SCHEMA output property added keywords (optional)"
+    },
+    {
+      "category": "test",
+      "severity": "changed",
+      "changed": true,
+      "breaking": false,
+      "message": "TEST changed golden: golden.jsonl -> golden.jsonl"
+    },
+    {
+      "category": "golden",
+      "severity": "changed",
+      "changed": true,
+      "breaking": false,
+      "message": "GOLDEN expected changed existing-webpage-refresh"
+    },
+    {
+      "category": "golden",
+      "severity": "changed",
+      "changed": true,
+      "breaking": false,
+      "message": "GOLDEN expected changed latex-project-page"
+    },
+    {
+      "category": "golden",
+      "severity": "changed",
+      "changed": true,
+      "breaking": false,
+      "message": "GOLDEN expected changed pdf-with-assets-page"
+    },
+    {
+      "category": "risk",
+      "severity": "changed",
+      "changed": true,
+      "breaking": false,
+      "message": "RISK review-required"
+    }
+  ]
+}

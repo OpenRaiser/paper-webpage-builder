@@ -91,6 +91,13 @@
         }
       }
     },
+    "keywords": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
     "risks": {
       "type": "array",
       "items": {
