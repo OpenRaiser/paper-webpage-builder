@@ -1,0 +1,19 @@
+ SKILL.md                                           |  15 +-
+ references/design_principles.md                    |  30 +-
+ references/module_patterns.md                      |  19 +-
+ .../skill-quality-loop-20260516/closure-notes.md   |  40 +++
+ reports/skill-quality-loop-20260516/diff.json      |  73 ++++
+ reports/skill-quality-loop-20260516/diff.txt       |   6 +
+ .../skill-quality-loop-20260516/git-diff-files.txt |   5 +
+ .../skill-quality-loop-20260516/git-diff-stat.txt  |   6 +
+ reports/skill-quality-loop-20260516/pr-summary.md  |  25 ++
+ .../skill-quality-loop-20260516/sit-report.html    | 398 +++++++++++++++++++++
+ .../skill-quality-loop-20260516/sit-report.json    | 119 ++++++
+ reports/skill-quality-loop-20260516/sit-report.md  |  56 +++
+ .../skill-quality-loop-20260516/sit-test-run.json  |  49 +++
+ .../skill-quality-loop-20260516/sit-test-run.txt   |   7 +
+ reports/skill-quality-loop-20260516/sit-test.txt   |   4 +
+ reports/skill-quality-loop-20260516/validate.txt   |  13 +
+ scripts/scan_paper.py                              |  42 ++-
+ skill.yaml                                         |   2 +-
+ 18 files changed, 897 insertions(+), 12 deletions(-)

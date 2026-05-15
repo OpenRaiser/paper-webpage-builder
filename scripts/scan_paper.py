@@ -47,6 +47,20 @@ def clean_latex(value: str) -> str:
     return value.strip()
 
 
+def approx_table_rows(table_body: str) -> int:
+    """Return a rough count of data rows in a LaTeX table body."""
+    tabular = re.search(
+        r"\\begin\{(?:tabular|tabularx|array)\}(?:\{[^{}]*\}){1,2}(.*?)\\end\{(?:tabular|tabularx|array)\}",
+        table_body,
+        re.S,
+    )
+    if not tabular:
+        return 0
+    body = re.sub(r"\\(?:toprule|midrule|bottomrule|hline|cline\{[^{}]*\})", "", tabular.group(1))
+    rows = [row for row in re.split(r"\\\\", body) if "&" in row and clean_latex(row)]
+    return len(rows)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("paper_tex", type=Path)
@@ -93,8 +107,32 @@ def main() -> int:
     print()
 
     print("Tables:")
-    for caption in re.finditer(r"\\begin\{table\*?\}.*?\\caption\{(.*?)\}.*?\\end\{table\*?\}", text, re.S):
-        print(f"- {clean_latex(caption.group(1))[:260]}")
+    table_pattern = re.compile(r"\\begin\{(table\*?)\}(?:\[[^\]]*\])?(.*?)\\end\{\1\}", re.S)
+    found_tables = False
+    for index, table in enumerate(table_pattern.finditer(text), 1):
+        found_tables = True
+        body = table.group(2)
+        captions = find_braced("caption", body)
+        labels = find_braced("label", body)
+        caption = clean_latex(captions[0])[:260] if captions else "(no caption)"
+        label = clean_latex(labels[0]) if labels else "(no label)"
+        line = text[: table.start()].count("\n") + 1
+        rows = approx_table_rows(body)
+        row_note = f", approx rows: {rows}" if rows else ""
+        print(f"- Table {index} at line {line}, label: {label}{row_note}: {caption}")
+
+    longtable_pattern = re.compile(r"\\begin\{longtable\}(?:\{[^{}]*\})?(.*?)\\end\{longtable\}", re.S)
+    for index, table in enumerate(longtable_pattern.finditer(text), 1):
+        found_tables = True
+        body = table.group(1)
+        captions = find_braced("caption", body)
+        labels = find_braced("label", body)
+        caption = clean_latex(captions[0])[:260] if captions else "(no caption)"
+        label = clean_latex(labels[0]) if labels else "(no label)"
+        line = text[: table.start()].count("\n") + 1
+        print(f"- Longtable {index} at line {line}, label: {label}: {caption}")
+    if not found_tables:
+        print("- (none detected)")
     print()
 
     links = re.findall(r"\\href\{([^{}]+)\}\{([^{}]+)\}|\\url\{([^{}]+)\}", text)

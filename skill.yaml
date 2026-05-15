@@ -1,5 +1,5 @@
 name: paper-webpage-builder
-version: 0.3.0
+version: 0.4.0
 description: Build polished single-page academic project webpages from paper sources, figures, references, and validation scripts.
 prompts:
   skill: SKILL.md

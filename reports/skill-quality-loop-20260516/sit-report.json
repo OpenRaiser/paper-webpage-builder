@@ -1,0 +1,119 @@
+{
+  "schema_version": "sit.report.v1",
+  "date": "2026-05-16",
+  "package": {
+    "name": "paper-webpage-builder",
+    "version": "0.4.0",
+    "description": "Build polished single-page academic project webpages from paper sources, figures, references, and validation scripts.",
+    "root": "/tmp/sit-ref-qbmhnyph/new",
+    "manifest": "/tmp/sit-ref-qbmhnyph/new/skill.yaml"
+  },
+  "validation": {
+    "status": "pass",
+    "ok": true,
+    "messages": [
+      "OK  name: paper-webpage-builder",
+      "OK  version: 0.4.0",
+      "OK  manifest exists: /tmp/sit-ref-qbmhnyph/new/skill.yaml",
+      "OK  prompt.skill exists: /tmp/sit-ref-qbmhnyph/new/SKILL.md",
+      "OK  prompt.module_patterns exists: /tmp/sit-ref-qbmhnyph/new/references/module_patterns.md",
+      "OK  prompt.design_principles exists: /tmp/sit-ref-qbmhnyph/new/references/design_principles.md",
+      "OK  schema.input exists: /tmp/sit-ref-qbmhnyph/new/schemas/input.schema.json",
+      "OK  schema.output exists: /tmp/sit-ref-qbmhnyph/new/schemas/output.schema.json",
+      "OK  test.golden exists: /tmp/sit-ref-qbmhnyph/new/tests/golden.jsonl",
+      "OK  schema.input JSON schema valid",
+      "OK  schema.output JSON schema valid",
+      "OK  test.golden JSONL parsed: 3 cases",
+      "OK  command.run_case: configured"
+    ]
+  },
+  "golden_tests": {
+    "status": "pass",
+    "ok": true,
+    "passed": 3,
+    "total": 3,
+    "summary": "SUMMARY 3/3 golden cases passed",
+    "messages": [
+      "OK  latex-project-page: partial match passed",
+      "OK  pdf-with-assets-page: partial match passed",
+      "OK  existing-webpage-refresh: partial match passed",
+      "SUMMARY 3/3 golden cases passed"
+    ]
+  },
+  "diff": {
+    "schema_version": "sit.diff.v1",
+    "old": {
+      "name": "paper-webpage-builder",
+      "version": "0.3.0",
+      "root": "/tmp/sit-ref-qbmhnyph/old",
+      "manifest": "/tmp/sit-ref-qbmhnyph/old/skill.yaml"
+    },
+    "new": {
+      "name": "paper-webpage-builder",
+      "version": "0.4.0",
+      "root": "/tmp/sit-ref-qbmhnyph/new",
+      "manifest": "/tmp/sit-ref-qbmhnyph/new/skill.yaml"
+    },
+    "changed": true,
+    "breaking": false,
+    "risk": "review-required",
+    "suggested_bump": "minor",
+    "messages": [
+      "PACKAGE paper-webpage-builder@0.3.0 -> paper-webpage-builder@0.4.0",
+      "MANIFEST changed version: '0.3.0' -> '0.4.0'",
+      "PROMPT changed design_principles: design_principles.md -> design_principles.md",
+      "PROMPT changed module_patterns: module_patterns.md -> module_patterns.md",
+      "PROMPT changed skill: SKILL.md -> SKILL.md",
+      "RISK review-required"
+    ],
+    "events": [
+      {
+        "category": "package",
+        "severity": "info",
+        "changed": false,
+        "breaking": false,
+        "message": "PACKAGE paper-webpage-builder@0.3.0 -> paper-webpage-builder@0.4.0"
+      },
+      {
+        "category": "manifest",
+        "severity": "changed",
+        "changed": true,
+        "breaking": false,
+        "message": "MANIFEST changed version: '0.3.0' -> '0.4.0'"
+      },
+      {
+        "category": "prompt",
+        "severity": "changed",
+        "changed": true,
+        "breaking": false,
+        "message": "PROMPT changed design_principles: design_principles.md -> design_principles.md"
+      },
+      {
+        "category": "prompt",
+        "severity": "changed",
+        "changed": true,
+        "breaking": false,
+        "message": "PROMPT changed module_patterns: module_patterns.md -> module_patterns.md"
+      },
+      {
+        "category": "prompt",
+        "severity": "changed",
+        "changed": true,
+        "breaking": false,
+        "message": "PROMPT changed skill: SKILL.md -> SKILL.md"
+      },
+      {
+        "category": "risk",
+        "severity": "changed",
+        "changed": true,
+        "breaking": false,
+        "message": "RISK review-required"
+      }
+    ]
+  },
+  "reproducibility": {
+    "validate": "python3 -m sit.cli validate .",
+    "test": "python3 -m sit.cli test .",
+    "diff": "python3 -m sit.cli diff HEAD~1..HEAD"
+  }
+}

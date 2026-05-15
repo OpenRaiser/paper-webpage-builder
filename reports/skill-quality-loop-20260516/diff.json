@@ -1,0 +1,73 @@
+{
+  "schema_version": "sit.diff.v1",
+  "old": {
+    "name": "paper-webpage-builder",
+    "version": "0.3.0",
+    "root": "/tmp/sit-ref-eybqh_jk/old",
+    "manifest": "/tmp/sit-ref-eybqh_jk/old/skill.yaml",
+    "source": "HEAD~1"
+  },
+  "new": {
+    "name": "paper-webpage-builder",
+    "version": "0.4.0",
+    "root": "/tmp/sit-ref-eybqh_jk/new",
+    "manifest": "/tmp/sit-ref-eybqh_jk/new/skill.yaml",
+    "source": "HEAD"
+  },
+  "changed": true,
+  "breaking": false,
+  "risk": "review-required",
+  "suggested_bump": "minor",
+  "messages": [
+    "PACKAGE paper-webpage-builder@0.3.0 -> paper-webpage-builder@0.4.0",
+    "MANIFEST changed version: '0.3.0' -> '0.4.0'",
+    "PROMPT changed design_principles: design_principles.md -> design_principles.md",
+    "PROMPT changed module_patterns: module_patterns.md -> module_patterns.md",
+    "PROMPT changed skill: SKILL.md -> SKILL.md",
+    "RISK review-required"
+  ],
+  "events": [
+    {
+      "category": "package",
+      "severity": "info",
+      "changed": false,
+      "breaking": false,
+      "message": "PACKAGE paper-webpage-builder@0.3.0 -> paper-webpage-builder@0.4.0"
+    },
+    {
+      "category": "manifest",
+      "severity": "changed",
+      "changed": true,
+      "breaking": false,
+      "message": "MANIFEST changed version: '0.3.0' -> '0.4.0'"
+    },
+    {
+      "category": "prompt",
+      "severity": "changed",
+      "changed": true,
+      "breaking": false,
+      "message": "PROMPT changed design_principles: design_principles.md -> design_principles.md"
+    },
+    {
+      "category": "prompt",
+      "severity": "changed",
+      "changed": true,
+      "breaking": false,
+      "message": "PROMPT changed module_patterns: module_patterns.md -> module_patterns.md"
+    },
+    {
+      "category": "prompt",
+      "severity": "changed",
+      "changed": true,
+      "breaking": false,
+      "message": "PROMPT changed skill: SKILL.md -> SKILL.md"
+    },
+    {
+      "category": "risk",
+      "severity": "changed",
+      "changed": true,
+      "breaking": false,
+      "message": "RISK review-required"
+    }
+  ]
+}
