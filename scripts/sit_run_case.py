@@ -78,6 +78,7 @@ def _latex_project_output(
             {"name": "responsive_layout", "status": "not_run", "notes": "Browser screenshots still need to be captured."},
             {"name": "asset_independence", "status": "pass", "notes": "The page does not depend on the source paper directory."},
         ],
+        "keywords": _keywords("paper webpage", "method", "results", "local assets"),
         "risks": ["Browser screenshot validation still needs to be run."],
     }
 
@@ -105,6 +106,7 @@ def _pdf_with_assets_output(target_dir: str, index_html_path: str, has_figures: 
             {"name": "html_sanity", "status": "not_run", "notes": "No final HTML file was generated during this deterministic runner check."},
             {"name": "responsive_layout", "status": "not_run", "notes": "Responsive browser validation requires a rendered page."},
         ],
+        "keywords": _keywords("paper webpage", "dataset", "pdf extraction", "figures"),
         "risks": ["PDF-only extraction may miss author affiliations or table details."],
     }
 
@@ -123,12 +125,17 @@ def _existing_webpage_output(index_html_path: str) -> dict[str, Any]:
             {"name": "asset_independence", "status": "pass", "notes": "The page does not depend on the source paper directory."},
             {"name": "visual_consistency", "status": "not_run", "notes": "Manual design review is still required."},
         ],
+        "keywords": _keywords("paper webpage", "refresh", "quality checks", "self-contained"),
         "risks": ["Visual consistency should be reviewed after screenshots are captured."],
     }
 
 
 def _module(name: str, purpose: str, content_sources: list[str]) -> dict[str, Any]:
     return {"name": name, "purpose": purpose, "content_sources": content_sources}
+
+
+def _keywords(*values: str) -> list[str]:
+    return list(values)
 
 
 if __name__ == "__main__":

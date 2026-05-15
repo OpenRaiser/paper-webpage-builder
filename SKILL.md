@@ -52,6 +52,7 @@ In the final response, include:
 - The generated/updated `index.html` path.
 - The major modules included.
 - The important figures/tables included.
+- Suggested project keywords or tags for discovery.
 - The quality checks performed for links, HTML sanity, responsive layout, asset independence, and visual consistency.
 - Validation performed and remaining risks.
 
