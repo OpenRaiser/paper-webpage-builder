@@ -1,0 +1,125 @@
+{
+  "schema_version": "sit.diff.v1",
+  "old": {
+    "name": "paper-webpage-builder",
+    "version": "0.4.0",
+    "root": "/tmp/paper-webpage-builder-head-20260517232243",
+    "manifest": "/tmp/paper-webpage-builder-head-20260517232243/skill.yaml",
+    "source": "/tmp/paper-webpage-builder-head-20260517232243"
+  },
+  "new": {
+    "name": "paper-webpage-builder",
+    "version": "0.5.0",
+    "root": "/mnt/shared-storage-user/xuxinglong-p/paper-webpage-builder",
+    "manifest": "/mnt/shared-storage-user/xuxinglong-p/paper-webpage-builder/skill.yaml",
+    "source": "/mnt/shared-storage-user/xuxinglong-p/paper-webpage-builder"
+  },
+  "changed": true,
+  "breaking": false,
+  "risk": "review-required",
+  "suggested_bump": "minor",
+  "messages": [
+    "PACKAGE paper-webpage-builder@0.4.0 -> paper-webpage-builder@0.5.0",
+    "MANIFEST changed version: '0.4.0' -> '0.5.0'",
+    "PROMPT changed skill: SKILL.md -> SKILL.md (+17 -8; headings: Paper Webpage Builder, Core Rule, Workflow)",
+    "SCRIPT added scripts/convert_figures.py (review required; cover with runner or targeted tests)",
+    "SCRIPT added scripts/extract_citation.py (review required; cover with runner or targeted tests)",
+    "SCRIPT added scripts/extract_tables.py (review required; cover with runner or targeted tests)",
+    "SCRIPT added scripts/scan_pdf.py (review required; cover with runner or targeted tests)",
+    "SCRIPT changed scripts/convert_figures.sh (review required; cover with runner or targeted tests)",
+    "SCRIPT changed scripts/scan_paper.py (review required; cover with runner or targeted tests)",
+    "RISK review-required"
+  ],
+  "events": [
+    {
+      "category": "package",
+      "severity": "info",
+      "changed": false,
+      "breaking": false,
+      "message": "PACKAGE paper-webpage-builder@0.4.0 -> paper-webpage-builder@0.5.0"
+    },
+    {
+      "category": "manifest",
+      "severity": "changed",
+      "changed": true,
+      "breaking": false,
+      "message": "MANIFEST changed version: '0.4.0' -> '0.5.0'"
+    },
+    {
+      "category": "prompt",
+      "severity": "changed",
+      "changed": true,
+      "breaking": false,
+      "message": "PROMPT changed skill: SKILL.md -> SKILL.md (+17 -8; headings: Paper Webpage Builder, Core Rule, Workflow)"
+    },
+    {
+      "category": "script",
+      "severity": "changed",
+      "changed": true,
+      "breaking": false,
+      "message": "SCRIPT added scripts/convert_figures.py (review required; cover with runner or targeted tests)"
+    },
+    {
+      "category": "script",
+      "severity": "changed",
+      "changed": true,
+      "breaking": false,
+      "message": "SCRIPT added scripts/extract_citation.py (review required; cover with runner or targeted tests)"
+    },
+    {
+      "category": "script",
+      "severity": "changed",
+      "changed": true,
+      "breaking": false,
+      "message": "SCRIPT added scripts/extract_tables.py (review required; cover with runner or targeted tests)"
+    },
+    {
+      "category": "script",
+      "severity": "changed",
+      "changed": true,
+      "breaking": false,
+      "message": "SCRIPT added scripts/scan_pdf.py (review required; cover with runner or targeted tests)"
+    },
+    {
+      "category": "script",
+      "severity": "changed",
+      "changed": true,
+      "breaking": false,
+      "message": "SCRIPT changed scripts/convert_figures.sh (review required; cover with runner or targeted tests)"
+    },
+    {
+      "category": "script",
+      "severity": "changed",
+      "changed": true,
+      "breaking": false,
+      "message": "SCRIPT changed scripts/scan_paper.py (review required; cover with runner or targeted tests)"
+    },
+    {
+      "category": "risk",
+      "severity": "changed",
+      "changed": true,
+      "breaking": false,
+      "message": "RISK review-required"
+    }
+  ],
+  "text_diffs": [
+    {
+      "kind": "prompt",
+      "name": "skill",
+      "old_path": "/tmp/paper-webpage-builder-head-20260517232243/SKILL.md",
+      "new_path": "/mnt/shared-storage-user/xuxinglong-p/paper-webpage-builder/SKILL.md",
+      "added_lines": 17,
+      "removed_lines": 8,
+      "headings": [
+        "Paper Webpage Builder",
+        "Core Rule",
+        "Workflow",
+        "Output Expectations",
+        "Reference Files",
+        "Scripts"
+      ],
+      "variables": [],
+      "summary": "PROMPT summary skill: +17 -8; headings: Paper Webpage Builder, Core Rule, Workflow, Output Expectations, Reference Files"
+    }
+  ]
+}

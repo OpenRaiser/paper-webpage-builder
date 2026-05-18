@@ -1,11 +1,21 @@
 #!/usr/bin/env python3
-"""Extract a compact content inventory from a LaTeX paper."""
+"""Extract a compact content inventory from a LaTeX paper.
+
+Multi-file projects are supported: `\\input{...}` and `\\include{...}`
+references inside the root .tex are read recursively (depth-limited) so
+sectioned papers (`main.tex` + `sections/*.tex`) produce a complete
+inventory.
+"""
 
 from __future__ import annotations
 
 import argparse
 import re
+import sys
 from pathlib import Path
+
+INPUT_RE = re.compile(r"\\(?:input|include|subfile)\{([^{}]+)\}")
+MAX_INCLUDE_DEPTH = 6
 
 
 def strip_comments(text: str) -> str:
@@ -15,6 +25,45 @@ def strip_comments(text: str) -> str:
             continue
         lines.append(re.sub(r"(?<!\\)%.*", "", line))
     return "\n".join(lines)
+
+
+def read_text_with_warning(path: Path) -> str:
+    try:
+        return path.read_text(encoding="utf-8")
+    except UnicodeDecodeError:
+        print(
+            f"warning: {path} is not utf-8, decoded as latin-1 (some characters may be replaced)",
+            file=sys.stderr,
+        )
+        return path.read_text(encoding="latin-1", errors="replace")
+
+
+def read_with_inputs(root: Path) -> str:
+    """Concatenate root tex with \\input/\\include children (depth-first)."""
+    visited: set[Path] = set()
+    chunks: list[str] = []
+
+    def load(path: Path, depth: int) -> None:
+        try:
+            resolved = path.resolve()
+        except OSError:
+            return
+        if resolved in visited or depth > MAX_INCLUDE_DEPTH or not resolved.is_file():
+            return
+        visited.add(resolved)
+        text = strip_comments(read_text_with_warning(resolved))
+        chunks.append(f"%%% file: {resolved}\n{text}")
+        for match in INPUT_RE.finditer(text):
+            ref = match.group(1).strip()
+            if not ref:
+                continue
+            candidate = resolved.parent / ref
+            if candidate.suffix == "":
+                candidate = candidate.with_suffix(".tex")
+            load(candidate, depth + 1)
+
+    load(root, 0)
+    return "\n\n".join(chunks)
 
 
 def find_braced(command: str, text: str) -> list[str]:
@@ -66,7 +115,11 @@ def main() -> int:
     parser.add_argument("paper_tex", type=Path)
     args = parser.parse_args()
 
-    text = strip_comments(args.paper_tex.read_text(encoding="utf-8", errors="ignore"))
+    if not args.paper_tex.is_file():
+        print(f"error: not a file: {args.paper_tex}", file=sys.stderr)
+        return 2
+
+    text = read_with_inputs(args.paper_tex)
 
     print("# Paper Inventory\n")
 
