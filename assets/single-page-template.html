@@ -1,15 +1,101 @@
 <!doctype html>
-<html lang="en">
+<!--
+  paper-webpage-builder single-page skeleton.
+
+  Adapt this skeleton to the target paper. Do NOT keep it as-is when filling
+  content for a specific paper: the visual system, palette, and module
+  selection should be derived from the paper itself (see references/
+  design_principles.md). The structure below is a content-free starting
+  point, not a finished design.
+
+  Placeholders use the double-brace convention so scripts/render_template.py
+  can substitute them. Required placeholders:
+    LANG            BCP-47 tag, e.g. "en", "zh-CN", "ja"
+    TITLE           short page title (paper title is fine)
+    DESCRIPTION     one-line social/SEO description (≤ 200 chars)
+    CANONICAL_URL   absolute canonical URL of the page
+    OG_IMAGE        absolute or root-relative URL to a 1200x630 social card
+
+  Optional placeholders are listed inline with sensible defaults.
+-->
+<html lang="{{LANG}}">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{{TITLE}}</title>
+  <meta name="description" content="{{DESCRIPTION}}" />
+
+  <!-- Canonical + social. Replace or remove if the page has no public URL yet. -->
+  <link rel="canonical" href="{{CANONICAL_URL}}" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="{{TITLE}}" />
+  <meta property="og:description" content="{{DESCRIPTION}}" />
+  <meta property="og:image" content="{{OG_IMAGE}}" />
+  <meta property="og:url" content="{{CANONICAL_URL}}" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="{{TITLE}}" />
+  <meta name="twitter:description" content="{{DESCRIPTION}}" />
+  <meta name="twitter:image" content="{{OG_IMAGE}}" />
+
+  <!-- ScholarlyArticle JSON-LD: scripts/inject_metadata.py replaces this stub. -->
+  <script type="application/ld+json">{{JSONLD}}</script>
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root { color-scheme: light; }
+    /* CJK-friendly system stack: keeps Latin characters in a sans-serif and
+       CJK characters in their respective system UI fonts. Override per-design
+       only if the paper's visual cue inventory calls for a different family. */
+    body {
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+                   "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB",
+                   "Microsoft YaHei", "Noto Sans CJK SC", "Noto Sans CJK JP",
+                   "Noto Sans CJK KR", "WenQuanYi Micro Hei", sans-serif;
+    }
+    /* Skip-link for keyboard users; visible on focus only. */
+    .skip-link {
+      position: absolute; left: -9999px; top: 0;
+      padding: 0.5rem 0.75rem; background: #000; color: #fff;
+      border-radius: 0 0 0.25rem 0;
+    }
+    .skip-link:focus { left: 0; z-index: 1000; }
+    /* Honor reduced-motion preference for any custom transitions/animations. */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
 </head>
 <body>
-  <!-- Use as a minimal starting point only. Adapt layout and visual system to the paper. -->
-  <main id="home"></main>
-  <script>lucide.createIcons();</script>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <header role="banner">
+    <!-- Site/page navigation. Keep it short: paper title + 3-6 anchor links. -->
+    <nav aria-label="Primary"></nav>
+  </header>
+
+  <main id="main">
+    <!-- Hero / above-the-fold. Title, claim, authors, links, headline metric. -->
+    <section id="hero" aria-labelledby="hero-title">
+      <h1 id="hero-title"></h1>
+    </section>
+
+    <!-- Replace with the modules chosen for this paper, in order. Common
+         modules: motivation, method, dataset, results, case-study, citation.
+         Tag any <table> coming from the paper with data-tex-label="<label>"
+         so scripts/reconcile_tables.py can match it back to the ledger. -->
+  </main>
+
+  <footer role="contentinfo"></footer>
+
+  <script>
+    if (window.lucide) { lucide.createIcons(); }
+  </script>
 </body>
 </html>

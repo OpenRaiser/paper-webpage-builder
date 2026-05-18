@@ -1,0 +1,134 @@
+{
+  "schema_version": "sit.report.v1",
+  "date": "2026-05-14",
+  "package": {
+    "name": "paper-webpage-builder",
+    "version": "0.2.0",
+    "description": "Build polished single-page academic project webpages from paper sources, figures, references, and validation scripts.",
+    "root": "/tmp/sit-ref-t1e8x3hu/new",
+    "manifest": "/tmp/sit-ref-t1e8x3hu/new/skill.yaml"
+  },
+  "validation": {
+    "status": "pass",
+    "ok": true,
+    "messages": [
+      "OK  name: paper-webpage-builder",
+      "OK  version: 0.2.0",
+      "OK  manifest exists: /tmp/sit-ref-t1e8x3hu/new/skill.yaml",
+      "OK  prompt.skill exists: /tmp/sit-ref-t1e8x3hu/new/SKILL.md",
+      "OK  prompt.module_patterns exists: /tmp/sit-ref-t1e8x3hu/new/references/module_patterns.md",
+      "OK  prompt.design_principles exists: /tmp/sit-ref-t1e8x3hu/new/references/design_principles.md",
+      "OK  schema.input exists: /tmp/sit-ref-t1e8x3hu/new/schemas/input.schema.json",
+      "OK  schema.output exists: /tmp/sit-ref-t1e8x3hu/new/schemas/output.schema.json",
+      "OK  test.golden exists: /tmp/sit-ref-t1e8x3hu/new/tests/golden.jsonl",
+      "OK  schema.input JSON schema valid",
+      "OK  schema.output JSON schema valid",
+      "OK  test.golden JSONL parsed: 3 cases"
+    ]
+  },
+  "golden_tests": {
+    "status": "pass",
+    "ok": true,
+    "passed": 3,
+    "total": 3,
+    "summary": "SUMMARY 3/3 golden cases passed",
+    "messages": [
+      "OK  latex-project-page: schema_only match passed",
+      "OK  pdf-with-assets-page: schema_only match passed",
+      "OK  existing-webpage-refresh: schema_only match passed",
+      "SUMMARY 3/3 golden cases passed"
+    ]
+  },
+  "diff": {
+    "schema_version": "sit.diff.v1",
+    "old": {
+      "name": "paper-webpage-builder",
+      "version": "0.1.0",
+      "root": "/tmp/sit-ref-t1e8x3hu/old",
+      "manifest": "/tmp/sit-ref-t1e8x3hu/old/skill.yaml"
+    },
+    "new": {
+      "name": "paper-webpage-builder",
+      "version": "0.2.0",
+      "root": "/tmp/sit-ref-t1e8x3hu/new",
+      "manifest": "/tmp/sit-ref-t1e8x3hu/new/skill.yaml"
+    },
+    "changed": true,
+    "breaking": false,
+    "risk": "review-required",
+    "suggested_bump": "minor",
+    "messages": [
+      "PACKAGE paper-webpage-builder@0.1.0 -> paper-webpage-builder@0.2.0",
+      "MANIFEST changed version: '0.1.0' -> '0.2.0'",
+      "PROMPT changed skill: SKILL.md -> SKILL.md",
+      "SCHEMA changed output: output.schema.json -> output.schema.json",
+      "SCHEMA output property added quality_checks (optional)",
+      "TEST changed golden: golden.jsonl -> golden.jsonl",
+      "GOLDEN case added existing-webpage-refresh",
+      "RISK review-required"
+    ],
+    "events": [
+      {
+        "category": "package",
+        "severity": "info",
+        "changed": false,
+        "breaking": false,
+        "message": "PACKAGE paper-webpage-builder@0.1.0 -> paper-webpage-builder@0.2.0"
+      },
+      {
+        "category": "manifest",
+        "severity": "changed",
+        "changed": true,
+        "breaking": false,
+        "message": "MANIFEST changed version: '0.1.0' -> '0.2.0'"
+      },
+      {
+        "category": "prompt",
+        "severity": "changed",
+        "changed": true,
+        "breaking": false,
+        "message": "PROMPT changed skill: SKILL.md -> SKILL.md"
+      },
+      {
+        "category": "schema",
+        "severity": "changed",
+        "changed": true,
+        "breaking": false,
+        "message": "SCHEMA changed output: output.schema.json -> output.schema.json"
+      },
+      {
+        "category": "schema",
+        "severity": "changed",
+        "changed": true,
+        "breaking": false,
+        "message": "SCHEMA output property added quality_checks (optional)"
+      },
+      {
+        "category": "test",
+        "severity": "changed",
+        "changed": true,
+        "breaking": false,
+        "message": "TEST changed golden: golden.jsonl -> golden.jsonl"
+      },
+      {
+        "category": "golden",
+        "severity": "changed",
+        "changed": true,
+        "breaking": false,
+        "message": "GOLDEN case added existing-webpage-refresh"
+      },
+      {
+        "category": "risk",
+        "severity": "changed",
+        "changed": true,
+        "breaking": false,
+        "message": "RISK review-required"
+      }
+    ]
+  },
+  "reproducibility": {
+    "validate": "python3 -m sit.cli validate .",
+    "test": "python3 -m sit.cli test .",
+    "diff": "python3 -m sit.cli report . --compare main..HEAD"
+  }
+}

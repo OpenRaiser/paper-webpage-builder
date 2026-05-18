@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "additionalProperties": false,
-  "required": ["index_html_path", "modules", "assets", "validation", "risks"],
+  "required": ["index_html_path", "modules", "assets", "validation", "quality_checks", "keywords", "risks"],
   "properties": {
     "index_html_path": {
       "type": "string",
@@ -51,6 +51,26 @@
         }
       }
     },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "lang": {
+          "type": "string",
+          "description": "BCP-47 language tag rendered into <html lang=\"...\">"
+        },
+        "canonical": {
+          "type": "string",
+          "description": "Canonical URL written into <link rel=\"canonical\"> and og:url."
+        },
+        "og_image": {
+          "type": "string",
+          "description": "Absolute or root-relative URL to the social card."
+        },
+        "doi": {"type": "string"},
+        "arxiv": {"type": "string"}
+      }
+    },
     "validation": {
       "type": "object",
       "additionalProperties": false,
@@ -67,11 +87,20 @@
         "responsive_check": {
           "type": "string",
           "enum": ["pass", "fail", "not_run"]
+        },
+        "table_reconciliation": {
+          "type": "string",
+          "enum": ["pass", "fail", "not_run"]
+        },
+        "design_drift": {
+          "type": "string",
+          "enum": ["pass", "fail", "not_run"]
         }
       }
     },
     "quality_checks": {
       "type": "array",
+      "minItems": 1,
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -79,7 +108,15 @@
         "properties": {
           "name": {
             "type": "string",
-            "enum": ["links", "html_sanity", "responsive_layout", "asset_independence", "visual_consistency"]
+            "enum": [
+              "links",
+              "html_sanity",
+              "responsive_layout",
+              "asset_independence",
+              "visual_consistency",
+              "table_reconciliation",
+              "design_drift"
+            ]
           },
           "status": {
             "type": "string",
@@ -93,6 +130,7 @@
     },
     "keywords": {
       "type": "array",
+      "minItems": 1,
       "items": {
         "type": "string",
         "minLength": 1

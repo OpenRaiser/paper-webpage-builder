@@ -31,11 +31,27 @@ def read_text_with_warning(path: Path) -> str:
     try:
         return path.read_text(encoding="utf-8")
     except UnicodeDecodeError:
+        # Try a couple of common alternatives before falling back to latin-1
+        # with replacement characters, so we can give a more specific warning.
+        for encoding in ("utf-8-sig", "gb18030", "shift_jis", "euc-kr"):
+            try:
+                text = path.read_text(encoding=encoding)
+                print(
+                    f"warning: {path} decoded with fallback encoding `{encoding}` "
+                    f"(not UTF-8). Re-save the file as UTF-8 to silence this.",
+                    file=sys.stderr,
+                )
+                return text
+            except (UnicodeDecodeError, LookupError):
+                continue
+        text = path.read_text(encoding="latin-1", errors="replace")
+        replaced = text.count("�")
         print(
-            f"warning: {path} is not utf-8, decoded as latin-1 (some characters may be replaced)",
+            f"warning: {path} could not be decoded as UTF-8 nor as common CJK "
+            f"encodings; fell back to latin-1 with {replaced} replaced character(s).",
             file=sys.stderr,
         )
-        return path.read_text(encoding="latin-1", errors="replace")
+        return text
 
 
 def read_with_inputs(root: Path) -> str:
