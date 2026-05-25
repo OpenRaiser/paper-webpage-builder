@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Paper Webpage Agent</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>Paper Webpage Agent</h1>
+      <p>Chat with an agent, track progress, preview the webpage, and mark visual regions for local repair.</p>
+    </div>
+    <div id="status" class="status" role="status">Idle</div>
+  </header>
+
+  <main class="shell">
+    <aside class="chat-panel" aria-label="Agent chat">
+      <section class="setup">
+        <label for="projectPath">Paper project folder</label>
+        <div class="path-row">
+          <input id="projectPath" type="text" placeholder="Select a paper project folder" spellcheck="false" readonly>
+          <button id="browseBtn" type="button">Browse</button>
+        </div>
+        <div id="browserPanel" class="browser-panel" hidden>
+          <div class="browser-roots" id="browserRoots"></div>
+          <div class="browser-head">
+            <button id="parentDirBtn" type="button">Up</button>
+            <span id="browserPath"></span>
+          </div>
+          <div id="browserList" class="browser-list"></div>
+          <button id="useFolderBtn" class="use-folder" type="button">Use This Folder</button>
+        </div>
+        <label for="outputDir">Output folder</label>
+        <input id="outputDir" type="text" value="webpage" spellcheck="false">
+        <div class="button-row">
+          <button id="newSessionBtn" type="button">Start Session</button>
+          <button id="inspectBtn" type="button">Inspect</button>
+        </div>
+      </section>
+
+      <section class="progress-card" aria-label="Agent progress">
+        <div class="progress-head">
+          <span id="stageLabel">No active job</span>
+          <span id="progressNumber">0%</span>
+        </div>
+        <div class="progress-track">
+          <div id="progressBar" class="progress-bar"></div>
+        </div>
+      </section>
+
+      <section id="messages" class="messages" aria-live="polite">
+        <div class="message system">
+          <div class="role">System</div>
+          <div class="content">Start a session, then ask naturally: “为这个论文构建一个 webpage，输出到 webpage/index.html”。</div>
+        </div>
+      </section>
+
+      <form id="chatForm" class="composer">
+        <textarea id="chatInput" rows="4" placeholder="Describe the task for the agent..." disabled></textarea>
+        <div class="composer-actions">
+          <label class="check-row">
+            <input id="includeAnnotation" type="checkbox" disabled>
+            <span>Include selected region</span>
+          </label>
+          <button id="sendBtn" type="submit" disabled>Send</button>
+        </div>
+      </form>
+
+      <details class="log-panel">
+        <summary>Agent log</summary>
+        <pre id="agentLog" class="log"></pre>
+      </details>
+    </aside>
+
+    <section class="preview-panel" aria-label="Preview">
+      <div class="preview-toolbar">
+        <div class="preview-meta">
+          <span id="previewLabel">No preview loaded</span>
+          <span id="coordLabel">No selection</span>
+        </div>
+        <div class="toolbar-actions">
+          <button id="zoomOutBtn" type="button" disabled>-</button>
+          <span id="zoomLabel" class="zoom-label">100%</span>
+          <button id="zoomInBtn" type="button" disabled>+</button>
+          <button id="canvasBtn" type="button" disabled>Canvas Mode</button>
+          <button id="stashBtn" type="button" disabled>Stash</button>
+          <button id="undoBtn" type="button" disabled>Undo</button>
+          <button id="redoBtn" type="button" disabled>Redo</button>
+          <button id="saveLayoutBtn" type="button" disabled>Save Layout</button>
+          <button id="markBtn" type="button" disabled>Mark Region</button>
+          <button id="validateBtn" type="button" disabled>Validate</button>
+        </div>
+      </div>
+      <div class="preview-content">
+        <div id="previewWrap" class="preview-wrap">
+          <iframe id="previewFrame" title="Generated webpage preview"></iframe>
+          <div id="overlay" class="overlay" hidden></div>
+          <div id="selectionBox" class="selection-box" hidden></div>
+        </div>
+        <aside id="resourceShelf" class="resource-shelf" aria-label="Canvas resources" hidden>
+          <div class="resource-head">
+            <strong>Resources</strong>
+            <span id="resourceCount">0</span>
+          </div>
+          <div id="resourceList" class="resource-list"></div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

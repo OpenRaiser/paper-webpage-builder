@@ -62,8 +62,8 @@ Background options are choices, not defaults:
 - When placing two or more figures in the same row, compare their aspect ratios first. If the widest ratio divided by the narrowest ratio is above roughly 1.25, use a stacked layout, a main-figure-plus-notes composition, or an intentionally cropped thumbnail treatment for non-critical images. Do not rely on equal boxes to fix alignment.
 - Use cards for repeated items, not for every page band.
 - Keep dense operational/benchmark pages compact and scannable.
-- Ensure long tables scroll horizontally on mobile and do not compress text beyond readability.
-- Size tables by density: two- or three-column tables should use a `compact`/`narrow` treatment with a capped column width, while central result tables with many columns should use full-width scroll containers.
+- Ensure long tables remain statically readable on mobile and desktop; do not rely on horizontal scrolling or clipping. Split/group columns or use multiple full sub-tables when a single table is too wide.
+- Size tables by density: two- or three-column tables should use a `compact`/`narrow` treatment with a capped column width, while central result tables with many columns should use full-width static modules, grouped columns, or multiple complete sub-tables.
 - Do not leave a narrow table isolated inside a full-width band with a large empty area to its right. Pair it with a related figure, metric cards, explanatory notes, or place it in a visibly constrained column so the unused space reads as layout, not an accident.
 
 ## Validation Checklist

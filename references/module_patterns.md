@@ -21,7 +21,7 @@ Tables should enter the webpage when they carry the core claim.
 - Benchmark comparisons: include in full when the paper uses them to claim coverage, novelty, or state-of-the-art positioning.
 - Dataset stats: include a compact web table or metric grid, but preserve all dimensions that support the claim.
 - Ablations: include when the user asks for completeness, the paper's method depends on them, or the abstract/conclusion cites them.
-- Large tables: wrap in horizontal scroll, keep sticky headers if practical, group rows by model family, highlight the proposed method and best values.
+- Large tables: keep them statically readable; use wider modules, grouped columns, or multiple complete sub-tables instead of horizontal scroll. Keep sticky headers if practical, group rows by model family, highlight the proposed method and best values.
 - If a table is too wide, split it by metric group or model family while preserving all rows and values.
 - If a figure duplicates a table, the table can be represented visually only when all values remain inspectable or a linked full table is present.
 

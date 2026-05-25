@@ -15,6 +15,7 @@ Two failure modes to actively avoid:
 
 - Do not reuse a background system from another paper page by default. Grids, coordinate paper, dark sections, gradients, or canvas textures are allowed only when they are supported by the target paper's own figures, domain, or visual language.
 - Do not summarize away central evidence. If the paper's main claim depends on a main experiment table, benchmark comparison table, dataset statistics table, or ablation table, the webpage must include that table in full or provide a clearly equivalent full presentation.
+- Do not show partial or horizontally scrolling tables. Table rows, headers, and cell text must be statically visible; they must not be clipped by smaller white/card containers, fixed-height panels, masks, fades, `overflow:hidden`, or `overflow-x:auto/scroll`. Wide tables should use grouped columns, multiple full sub-tables, readable density reduction, or a larger responsive container while preserving values.
 
 ## Workflow
 
@@ -28,7 +29,7 @@ Two failure modes to actively avoid:
 
 2. Build a content map.
    - Extract title, authors, affiliations, abstract claim, contributions, links, dataset stats, method description, main results, case studies, citation.
-   - Map every central table to a page module. If a central table is too large, plan a scrollable/grouped table rather than dropping rows.
+   - Map every central table to a page module. If a central table is too large, plan grouped columns, multiple full sub-tables, or a larger static table module rather than dropping rows or adding horizontal scroll.
    - Decide modules before writing. Typical modules: Hero, Motivation, Method, Dataset/Benchmark, Results, Case Study, Citation.
    - Read `references/module_patterns.md` when choosing sections or table placement.
 
@@ -58,18 +59,28 @@ Two failure modes to actively avoid:
    - Produce a self-contained single-page `index.html` unless the repo already has a framework.
    - Include responsive navigation, resource buttons, figure zoom/modal behavior, and readable tables.
    - For primary paper figures, do not use equal-ratio card grids unless all figures in that grid share a close aspect ratio. If a layout needs equal rhythm, align captions/text, not the image boxes.
-   - Use compact/narrow table treatments for two- or three-column tables. Do not stretch low-density tables across the full page just because wide result tables need full-width scroll containers, and do not leave narrow tables isolated with a large blank area to the right; pair them with related notes, metrics, or figures.
-   - Include full central tables with horizontal scroll on mobile, sticky headers when useful, grouped rows when needed, and highlights for the proposed method or best values. Tag each rendered `<table>` (or its wrapping `<section>`) with `data-tex-label="<label>"` so step 7 can reconcile it.
+   - Use compact/narrow table treatments for two- or three-column tables. Do not stretch low-density tables across the full page just because wide result tables need more space, and do not leave narrow tables isolated with a large blank area to the right; pair them with related notes, metrics, or figures.
+   - Include full central tables as static readable content, with sticky headers when useful, grouped rows/columns when needed, and highlights for the proposed method or best values. Tag each rendered `<table>` (or its wrapping `<section>`) with `data-tex-label="<label>"` so step 7 can reconcile it.
+   - Keep each table visually contained by its white/card/table wrapper. If a table is wider than the module, redesign the module: allocate more width, split/group columns into complete sub-tables, or reduce density while staying readable. Do not use `overflow-x:auto/scroll`, `overflow:hidden`, fixed heights, clipped cards, text fades, or partial table previews.
    - Use charts only when they clarify a key result beyond the paper figures.
    - Avoid hidden dependency on the source paper directory; generated page should work from the webpage folder.
 
 7. Validate.
    - Run `scripts/check_webpage_links.py <index.html> --full` for the broader lint: missing `src`/`href`/`data-figure`, CSS `url(...)`, `srcset`, `<source>`/`<video poster>`/`preload`, `og:image`/`twitter:image`, broken `#fragment` targets, duplicate ids, missing `alt`/`title` on `<img>`/`<iframe>`, and path-traversal hrefs that resolve outside the page directory. Use `--json` when you need a machine-readable report.
    - Reconcile the table ledger against the page with `scripts/reconcile_tables.py --ledger <ledger.json> --html <index.html>`. The ledger is the JSON produced by `extract_tables.py` in step 1; tag any HTML `<table>` (or its wrapping `<section>`) with `data-tex-label="<label>"` to enable strict matching. The script flags missing, abbreviated, and column-stripped tables; treat any "MISSING(central)" or "abbrev" line as a blocker.
+   - Run `scripts/check_table_fit.py <index.html> --json` to verify rendered tables are not clipped, do not spill outside their visual containers, and do not require horizontal scrolling. Treat any error as a blocker; this means the first generated page design is wrong and must be repaired before delivery.
    - Run `scripts/check_html_sanity.py <index.html>` for HTML5-aware validation. It prefers `html5validator`, then `tidy`, then `html5lib`; without those installed it falls back to a stdlib structural check and says so explicitly. Do NOT use `xmllint --html` — it false-flags HTML5 elements like `<main>`, `<dialog>`, and `<picture>`.
    - Recheck the design with `scripts/check_design_drift.py --html <index.html> --manifest <figures.manifest.json> [--reports-dir reports]`. It computes palette overlap between the figure colors and the page's chosen colors, flags unsupported grid/dot/notebook backgrounds, warns about fixed figure containers that can create blank space, warns about mixed-ratio figures placed in the same row, warns about overstretched low-column tables, and warns when class-token overlap with a sibling `reports/<other>/index.html` exceeds 70% (likely template clone). Treat any warning as a design review item, not silent acceptance.
    - Capture responsive screenshots with `scripts/capture_screenshots.py <index.html> --out-dir reports/<slug>/screenshots`. The script tries Playwright, then Pyppeteer, then headless Chromium; if none are installed it skips cleanly with `meta.json.status == "skipped"` so the rest of validation can continue.
    - Report any validation you could not run, including the `meta.json` skip reason when screenshots were not captured.
+
+8. Use the agent workbench when the user wants an interactive UI, ongoing progress, preview, or region-level repair.
+   - Start the local workbench with `python3 scripts/webpage_workbench.py --port 8765`.
+   - The workbench is a chat interface over the real skill workflow. The user should be able to say "build a webpage for this paper" and the backend agent should perform this workflow, not generate a generic scaffold.
+   - The backend runs an agent command in the background (default: local `codex exec` when available; override with `--agent-command` for Claude or another runner), tracks progress, logs output, and mounts the generated `index.html` in the preview pane.
+   - Use the iframe overlay to mark a visual defect. The workbench saves `annotation.json`, `context.html`, and `repair_prompt.md` under `<paper-project>/.paper-webpage-builder/annotations/<timestamp>/`, then includes that context in the next chat turn when requested.
+   - Treat saved DOM selectors, bounding boxes, computed styles, and user instruction as the repair scope. Make the smallest local HTML/CSS/JS change that resolves the selected defect, then rerun the checks in step 7.
+   - Read `references/visual_workbench.md` for the exact closed-loop contract.
 
 ## Output Expectations
 
@@ -88,6 +99,7 @@ The output is validated against `schemas/output.schema.json`; `keywords` and `qu
 
 - `references/module_patterns.md`: section patterns, paper-content extraction targets, and table handling.
 - `references/design_principles.md`: visual design rules for paper webpages.
+- `references/visual_workbench.md`: local UI loop for previewing generated pages, selecting visual defects, and handing region context to an agent.
 
 ## Scripts
 
@@ -100,6 +112,8 @@ The output is validated against `schemas/output.schema.json`; `keywords` and `qu
 - `scripts/inject_metadata.py`: build SEO + Schema.org `ScholarlyArticle` JSON-LD; outputs `render_template.py` values, a copy-paste meta block, or runs the in-place head refresh in one shot.
 - `scripts/check_webpage_links.py`: link/lint check for local assets; `--full` adds CSS `url(...)`, `srcset`, `<source>`/`poster`, `preload`, `og:image`, `#fragment` targets, duplicate ids, missing `alt`/`title`, and path-traversal warnings.
 - `scripts/reconcile_tables.py`: cross-check the LaTeX table ledger against `<table>`/`data-tex-label` in the rendered HTML.
+- `scripts/check_table_fit.py`: browser-level table fit check; flags clipped rows/cells, tables spilling outside white/card visual containers, and tables that require horizontal scrolling.
 - `scripts/check_html_sanity.py`: HTML5-aware sanity check (html5validator → tidy → html5lib → stdlib fallback).
 - `scripts/check_design_drift.py`: palette overlap between figures and page, plus figure-container, grid/dark/clone warnings against sibling `reports/`.
 - `scripts/capture_screenshots.py`: desktop+mobile screenshots and `meta.json` (Playwright → Pyppeteer → headless Chromium; skips cleanly if none installed).
+- `scripts/webpage_workbench.py`: dependency-light local chat UI/API for agent-backed paper webpage generation, progress/log streaming, preview mounting, iframe region marking, annotation capture, and local visual repair turns.

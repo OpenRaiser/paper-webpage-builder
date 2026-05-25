@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "sit": {
+      "command": "sit-mcp-server"
+    }
+  }
+}

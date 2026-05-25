@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["created_at", "project_dir", "html_path", "preview_root", "instruction", "viewport", "selection", "elements"],
+  "properties": {
+    "created_at": { "type": "string", "minLength": 1 },
+    "project_dir": { "type": "string", "minLength": 1 },
+    "html_path": { "type": "string", "minLength": 1 },
+    "preview_root": { "type": "string", "minLength": 1 },
+    "page": { "type": ["string", "null"] },
+    "instruction": { "type": "string" },
+    "viewport": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "width": { "type": ["number", "null"] },
+        "height": { "type": ["number", "null"] },
+        "scrollX": { "type": "number" },
+        "scrollY": { "type": "number" },
+        "devicePixelRatio": { "type": ["number", "null"] }
+      }
+    },
+    "selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y", "width", "height"],
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "width": { "type": "number" },
+        "height": { "type": "number" },
+        "zoom": { "type": "number" },
+        "viewport": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["x", "y", "width", "height"],
+          "properties": {
+            "x": { "type": "number" },
+            "y": { "type": "number" },
+            "width": { "type": "number" },
+            "height": { "type": "number" }
+          }
+        },
+        "document": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["x", "y", "width", "height"],
+          "properties": {
+            "x": { "type": "number" },
+            "y": { "type": "number" },
+            "width": { "type": "number" },
+            "height": { "type": "number" }
+          }
+        },
+        "scroll": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["x", "y"],
+          "properties": {
+            "x": { "type": "number" },
+            "y": { "type": "number" }
+          }
+        }
+      }
+    },
+    "elements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["selector", "tag", "bbox"],
+        "properties": {
+          "selector": { "type": "string" },
+          "tag": { "type": "string" },
+          "text": { "type": "string" },
+          "bbox": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["x", "y", "width", "height"],
+            "properties": {
+              "x": { "type": "number" },
+              "y": { "type": "number" },
+              "width": { "type": "number" },
+              "height": { "type": "number" }
+            }
+          },
+          "documentBbox": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["x", "y", "width", "height"],
+            "properties": {
+              "x": { "type": "number" },
+              "y": { "type": "number" },
+              "width": { "type": "number" },
+              "height": { "type": "number" }
+            }
+          },
+          "computedStyle": { "type": "object" },
+          "outerHTML": { "type": "string" }
+        }
+      }
+    }
+  }
+}
