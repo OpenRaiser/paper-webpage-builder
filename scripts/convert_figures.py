@@ -280,10 +280,16 @@ def convert_one(
 
 
 def write_manifest(target_dir: Path, name: str, assets: Iterable[ConvertedAsset]) -> Path:
+    asset_list = []
+    for asset in assets:
+        d = asdict(asset)
+        if d.get("width") and d.get("height") and d["height"] > 0:
+            d["aspect_ratio"] = round(d["width"] / d["height"], 4)
+        asset_list.append(d)
     payload = {
         "version": 1,
         "directory": str(target_dir.resolve()),
-        "assets": [asdict(asset) for asset in assets],
+        "assets": asset_list,
     }
     out = target_dir / name
     out.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")

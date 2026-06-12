@@ -80,6 +80,43 @@ Background options are choices, not defaults:
 - Text does not overlap figures/cards/buttons.
 - Page still works without access to the original paper source directory.
 
+## CSS Variable Naming
+
+CSS custom properties for colors must use semantic names (`--primary`,
+`--accent`, `--surface`, `--muted`) rather than hue-literal names (`--green`,
+`--blue`, `--red`). Hue-literal names rot the moment the palette shifts — as
+seen when a page uses `--green: #4060a0` where the actual color is blue.
+
+Rules:
+- Derive variable names from function (primary, accent, surface, border,
+  muted, text-secondary) rather than from apparent color family.
+- When using Tailwind utilities, keep the custom-property layer semantic
+  even if Tailwind class names use color families (`bg-blue-600` is fine;
+  `--green: #4060a0` is not).
+- The drift check (`check_design_drift.py --html ...`) flags variable names
+  that contradict their computed hue (e.g., `--green` whose H is in the
+  blue range 180–260°). Treat any such flag as a blocker.
+
+## Theme Color Propagation
+
+After defining CSS custom properties, all theme-significant colors must
+reference those variables rather than hardcoded hex values:
+
+- Table headers, group rows, card backgrounds, tag backgrounds, borders,
+  and footer accents must use `var(--primary)`, `var(--surface)`, etc.
+- Inline hex colors that don't fall within ΔE ≈ 20 of any declared CSS
+  variable are flagged by the drift check as `hardcoded_color_drift`.
+- The generation step must do a final grep for orphan hex colors outside
+  `:root` and replace them with the appropriate variable reference.
+
+## Footer and Logo Strip
+
+- Logo strips in the footer must use uniform `height` (recommend 48px) with
+  `object-fit: contain` so logos of wildly different native sizes render at
+  the same visual weight.
+- Footer links use the same muted color system as navigation secondary items.
+- Do not let logos inherit their natural (often wildly different) heights.
+
 ## Measurable Criteria
 
 The subjective rules above are easier to keep honest when paired with hard
@@ -118,6 +155,24 @@ checks. Where applicable, run:
   `reports/<other>/index.html` exists, the page's class-token bag should
   overlap less than 70% with any one of them. Above that threshold the
   new page is most likely cloning the prior one.
+
+- Grid density: grids with more than 4 columns must include a media query
+  at max-width ≤ 960px that reduces to at most 3 columns. Any grid item
+  narrower than 180px at viewports in the 360-1440px range is a layout
+  defect. The drift check flags grid rules missing responsive breakpoints.
+- Paired-figure alignment: when two figures are placed side-by-side in a
+  grid or flexbox row, use `align-items: stretch` with inner flexbox +
+  `object-fit: contain` (not `align-items: start`) so both figures fill
+  equal height regardless of aspect ratio. The manifest includes `width`,
+  `height`, and `aspect_ratio` fields; the drift check compares ratios of
+  figures sharing a `.paired-figures` / `.figure-row` container and flags
+  spread > 1.25 without stretch alignment.
+- CSS variable naming: variable names containing a color-word (green, blue,
+  red, orange, purple, yellow, teal, cyan, pink) where the actual hue
+  contradicts the name are flagged as `variable_name_hue_mismatch`.
+- Hardcoded color orphans: hex colors in CSS rules outside `:root` that
+  don't match any declared custom property within ΔE ≈ 20 are flagged as
+  `hardcoded_color_drift`.
 
 When a check cannot be run (e.g., manifest unavailable), record the skip
 in the validation summary instead of treating a missing check as a pass.

@@ -32,6 +32,8 @@ import sys
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urlparse
+from urllib.request import Request, urlopen
+from urllib.error import HTTPError, URLError
 
 ATTR_RE = re.compile(r"""(?:src|href|data-figure)=["']([^"']+)["']""")
 CSS_URL_RE = re.compile(r"""url\(\s*['"]?([^'"\)]+)['"]?\s*\)""")
@@ -67,6 +69,7 @@ class WebpageInspector(HTMLParser):
         self.style_blocks: list[str] = []
         self.inline_styles: list[str] = []
         self.missing_alt: list[tuple[str, int]] = []
+        self.external_urls: list[tuple[str, str, bool]] = []  # (url, tag, unverified)
         self.in_style = False
         self.style_buf: list[str] = []
         self.has_canonical = False
@@ -112,6 +115,11 @@ class WebpageInspector(HTMLParser):
                 pass
             elif is_local(href):
                 self._record_attr(href, "href", tag)
+            # Collect external URLs for optional reachability check
+            parsed_href = urlparse(href)
+            if parsed_href.scheme in ("http", "https") and parsed_href.netloc:
+                unverified = "data-unverified" in attr_dict
+                self.external_urls.append((href, tag, unverified))
             if tag == "link":
                 rel = attr_dict.get("rel", "").lower().split()
                 if "canonical" in rel:
@@ -128,6 +136,11 @@ class WebpageInspector(HTMLParser):
             src = attr_dict["src"]
             if is_local(src):
                 self._record_attr(src, "src", tag)
+            else:
+                parsed_src = urlparse(src)
+                if parsed_src.scheme in ("http", "https") and parsed_src.netloc:
+                    unverified = "data-unverified" in attr_dict
+                    self.external_urls.append((src, tag, unverified))
 
         # Video poster
         if "poster" in attr_dict and attr_dict["poster"] and is_local(attr_dict["poster"]):
@@ -224,7 +237,7 @@ def resolve_local(root: Path, raw: str) -> tuple[str, Path | None]:
     return ("ok", target)
 
 
-def lint_html(html_path: Path, full: bool) -> dict:
+def lint_html(html_path: Path, full: bool, check_external: bool = False) -> dict:
     text = html_path.read_text(encoding="utf-8", errors="ignore")
     inspector = WebpageInspector()
     inspector.feed(text)
@@ -367,7 +380,75 @@ def lint_html(html_path: Path, full: bool) -> dict:
              "note": "no og:image / twitter:image found; social previews will be blank"}
         )
 
+    # --- 8. external URL reachability (optional) ------------------------------
+    if check_external and inspector.external_urls:
+        issues.extend(check_external_urls(inspector.external_urls))
+
     return _summarize(issues, html_path, lang=inspector.html_lang_value)
+
+
+def check_external_urls(
+    urls: list[tuple[str, str, bool]], timeout: float = 5.0, max_requests: int = 20
+) -> list[dict]:
+    """HEAD-request external URLs and report failures.
+
+    Returns a list of issue dicts for unreachable or unverified URLs.
+    Deduplicates by URL before requesting. Caps at max_requests to avoid
+    blocking the validation pipeline on slow networks.
+    """
+    issues: list[dict] = []
+    seen: set[str] = set()
+    request_count = 0
+    for url, tag, unverified in urls:
+        if url in seen:
+            continue
+        seen.add(url)
+        if unverified:
+            issues.append({
+                "kind": "unverified_external_url",
+                "ref": url,
+                "tag": tag,
+                "severity": "warning",
+                "note": "URL marked data-unverified; confirm reachability before publishing.",
+            })
+            continue
+        if request_count >= max_requests:
+            issues.append({
+                "kind": "external_check_limit",
+                "severity": "info",
+                "note": f"Stopped after {max_requests} external requests; remaining URLs unchecked.",
+            })
+            break
+        request_count += 1
+        try:
+            req = Request(url, method="HEAD", headers={"User-Agent": "paper-webpage-builder/0.6"})
+            resp = urlopen(req, timeout=timeout)
+            code = resp.status
+            if code >= 400:
+                issues.append({
+                    "kind": "external_url_error",
+                    "ref": url,
+                    "tag": tag,
+                    "status": code,
+                    "severity": "error",
+                })
+        except HTTPError as exc:
+            issues.append({
+                "kind": "external_url_error",
+                "ref": url,
+                "tag": tag,
+                "status": exc.code,
+                "severity": "error" if exc.code < 500 else "warning",
+            })
+        except (URLError, OSError, TimeoutError):
+            issues.append({
+                "kind": "external_url_timeout",
+                "ref": url,
+                "tag": tag,
+                "severity": "warning",
+                "note": "Connection failed or timed out.",
+            })
+    return issues
 
 
 def _summarize(issues: list[dict], html_path: Path, lang: str = "") -> dict:
@@ -433,6 +514,8 @@ def main() -> int:
                         help="Emit a JSON report instead of text.")
     parser.add_argument("--strict", action="store_true",
                         help="Treat warnings as failures (exit 1 on any warning).")
+    parser.add_argument("--check-external", action="store_true",
+                        help="HEAD-request external URLs to verify reachability (max 20, 5s timeout).")
     args = parser.parse_args()
 
     if not args.html.is_file():
@@ -440,7 +523,7 @@ def main() -> int:
         return 2
 
     mode = "full" if args.full else args.mode
-    report = lint_html(args.html, full=(mode == "full"))
+    report = lint_html(args.html, full=(mode == "full"), check_external=args.check_external)
 
     if args.json:
         json.dump(report, sys.stdout, indent=2, ensure_ascii=False)

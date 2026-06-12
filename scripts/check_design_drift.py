@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Detect design drift between the rendered page and the paper's figures.
 
-Three checks:
+Seven checks:
 
 1. Palette overlap: sample the dominant colors from each figure listed in
    `figures.manifest.json` and compare against the colors used in the
@@ -19,6 +19,18 @@ Three checks:
 3. Figure layout risk: flag CSS patterns that commonly create large blank
    areas around paper figures, especially fixed-height/equal-aspect figure
    cards combined with `object-fit: contain`. Zoom modals are ignored.
+
+4. Variable name vs hue: flag CSS custom properties named with a color word
+   (green, blue, red, etc.) whose actual hue contradicts the name.
+
+5. Hardcoded color orphans: flag hex colors in non-:root CSS rules that
+   don't match any declared custom property within distance threshold.
+
+6. Grid responsive breakpoints: flag grids with >4 columns that lack a
+   media query at <=960px to reduce column count.
+
+7. Paired figure alignment: flag paired-figure containers using
+   align-items: start instead of stretch.
 
 This script is best-effort:
   - Color sampling needs PyMuPDF (already a project dep) or stdlib for PNG.
@@ -82,10 +94,41 @@ DEFAULT_DARK_LUMINANCE = 0.18
 DEFAULT_DARK_REPEAT = 2
 DEFAULT_RATIO_ROW_THRESHOLD = 1.25
 DEFAULT_NARROW_TABLE_MAX_COLS = 3
+DEFAULT_GRID_MIN_ITEM_WIDTH = 180
 VOID_TAGS = {
     "area", "base", "br", "col", "embed", "hr", "img", "input",
     "link", "meta", "param", "source", "track", "wbr",
 }
+
+CSS_VAR_DEF_RE = re.compile(r"--([\w-]+)\s*:\s*([^;]+);")
+GRID_COLS_RE = re.compile(
+    r"grid-template-columns\s*:\s*repeat\(\s*(\d+)"
+)
+MEDIA_QUERY_RE = re.compile(r"@media[^{]*max-width\s*:\s*(\d+)")
+PAIRED_FIGURE_RE = re.compile(
+    r"(?i)\b(paired-figures|figure-row|figure-pair|two-figures|image-row|benchmark-figures)\b"
+)
+ALIGN_ITEMS_RE = re.compile(r"(?i)\balign-items\s*:\s*(\w+)")
+
+HUE_WORD_RANGES: dict[str, tuple[float, float]] = {
+    "red": (345, 15),
+    "orange": (15, 45),
+    "yellow": (45, 70),
+    "green": (70, 170),
+    "teal": (170, 200),
+    "cyan": (170, 200),
+    "blue": (200, 260),
+    "purple": (260, 310),
+    "pink": (310, 345),
+}
+
+
+def _hue_in_range(hue: float, hue_range: tuple[float, float]) -> bool:
+    """Check if a hue (0-360) falls in a range that may wrap around 0."""
+    lo, hi = hue_range
+    if lo <= hi:
+        return lo <= hue <= hi
+    return hue >= lo or hue <= hi
 
 
 # --------------------------------------------------------------------------
@@ -544,6 +587,150 @@ def detect_overstretched_tables(tables: list[dict], max_cols: int = DEFAULT_NARR
 
 
 # --------------------------------------------------------------------------
+# New checks: variable naming, hardcoded colors, grid density, paired figures
+# --------------------------------------------------------------------------
+
+def detect_variable_hue_mismatch(styles: list[str], limit: int = 8) -> list[dict]:
+    """Flag CSS variables named with a color word whose value contradicts the name."""
+    issues: list[dict] = []
+    for blob in styles:
+        for name, value in CSS_VAR_DEF_RE.findall(blob):
+            name_lower = name.lower()
+            matched_word = None
+            for word in HUE_WORD_RANGES:
+                if word in name_lower:
+                    matched_word = word
+                    break
+            if not matched_word:
+                continue
+            hex_match = HEX_COLOR_RE.search(value)
+            rgb_match = RGB_FUNC_RE.search(value)
+            if hex_match:
+                rgb = _hex_to_rgb(hex_match.group(1))
+            elif rgb_match:
+                try:
+                    rgb = (int(rgb_match.group(1)), int(rgb_match.group(2)), int(rgb_match.group(3)))
+                except ValueError:
+                    continue
+            else:
+                continue
+            if _is_neutral(rgb, spread=20):
+                continue
+            r, g, b = (c / 255.0 for c in rgb)
+            h, _, s = colorsys.rgb_to_hls(r, g, b)
+            if s < 0.1:
+                continue
+            hue_deg = h * 360
+            expected_range = HUE_WORD_RANGES[matched_word]
+            if not _hue_in_range(hue_deg, expected_range):
+                issues.append({
+                    "variable": f"--{name}",
+                    "value": value.strip()[:40],
+                    "named_hue": matched_word,
+                    "actual_hue_deg": round(hue_deg, 1),
+                })
+                if len(issues) >= limit:
+                    return issues
+    return issues
+
+
+def detect_hardcoded_color_orphans(
+    styles: list[str], limit: int = 12
+) -> list[dict]:
+    """Find hex colors in non-:root CSS rules that don't match any custom property."""
+    declared_colors: list[tuple[int, int, int]] = []
+    non_root_colors: list[tuple[str, tuple[int, int, int]]] = []
+
+    for blob in styles:
+        for selector, declarations in CSS_RULE_RE.findall(blob):
+            sel_clean = selector.strip()
+            is_root = sel_clean in (":root", "html", ":root, html")
+            for hex_match in HEX_COLOR_RE.finditer(declarations):
+                rgb = _hex_to_rgb(hex_match.group(1))
+                if _is_neutral(rgb, spread=15):
+                    continue
+                if is_root:
+                    declared_colors.append(_bucket(rgb, 16))
+                else:
+                    non_root_colors.append((f"#{hex_match.group(1)}", rgb))
+
+    if not declared_colors:
+        return []
+
+    issues: list[dict] = []
+    seen: set[str] = set()
+    for hex_str, rgb in non_root_colors:
+        if hex_str in seen:
+            continue
+        bucketed = _bucket(rgb, 16)
+        min_dist = min(
+            (sum((a - b) ** 2 for a, b in zip(bucketed, declared)) ** 0.5
+             for declared in declared_colors),
+            default=999,
+        )
+        if min_dist > 20:
+            seen.add(hex_str)
+            issues.append({
+                "color": hex_str,
+                "nearest_variable_distance": round(min_dist, 1),
+            })
+            if len(issues) >= limit:
+                return issues
+    return issues
+
+
+def detect_grid_missing_breakpoints(styles: list[str], limit: int = 8) -> list[dict]:
+    """Flag grid rules with >4 columns that lack a responsive breakpoint at <=960px."""
+    issues: list[dict] = []
+    full_css = "\n".join(styles)
+
+    breakpoints_present: set[int] = set()
+    for bp_match in MEDIA_QUERY_RE.finditer(full_css):
+        breakpoints_present.add(int(bp_match.group(1)))
+
+    has_960_or_below = any(bp <= 960 for bp in breakpoints_present)
+
+    for blob in styles:
+        for selector, declarations in CSS_RULE_RE.findall(blob):
+            cols_match = GRID_COLS_RE.search(declarations)
+            if not cols_match:
+                continue
+            cols = int(cols_match.group(1))
+            if cols <= 4:
+                continue
+            selector_clean = selector.strip()[:80]
+            if not has_960_or_below:
+                issues.append({
+                    "selector": selector_clean,
+                    "columns": cols,
+                    "note": f"Grid has {cols} columns but no @media breakpoint at <=960px found.",
+                })
+                if len(issues) >= limit:
+                    return issues
+    return issues
+
+
+def detect_paired_figure_alignment(styles: list[str], limit: int = 8) -> list[dict]:
+    """Flag paired-figure containers using align-items: start instead of stretch."""
+    issues: list[dict] = []
+    for blob in styles:
+        for selector, declarations in CSS_RULE_RE.findall(blob):
+            selector_clean = selector.strip()
+            if not PAIRED_FIGURE_RE.search(selector_clean):
+                continue
+            align_match = ALIGN_ITEMS_RE.search(declarations)
+            if align_match and align_match.group(1).lower() in ("start", "flex-start", "baseline"):
+                issues.append({
+                    "selector": selector_clean[:80],
+                    "align_items": align_match.group(1),
+                    "note": "Paired figures should use align-items: stretch for equal height alignment.",
+                })
+                if len(issues) >= limit:
+                    return issues
+    return issues
+
+
+# --------------------------------------------------------------------------
 # Comparison
 # --------------------------------------------------------------------------
 
@@ -669,6 +856,10 @@ def main() -> int:
         figure_ratios, ratio_notes = load_figure_ratios(args.manifest)
     mixed_ratio_rows = detect_mixed_ratio_figure_rows(layout_parser.root, figure_ratios)
     narrow_table_risks = detect_overstretched_tables(layout_parser.tables)
+    variable_hue_mismatches = detect_variable_hue_mismatch(page_parser.styles)
+    hardcoded_orphans = detect_hardcoded_color_orphans(page_parser.styles)
+    grid_breakpoint_issues = detect_grid_missing_breakpoints(page_parser.styles)
+    paired_figure_issues = detect_paired_figure_alignment(page_parser.styles)
 
     clone_hits: list[dict] = []
     if args.reports_dir:
@@ -741,6 +932,52 @@ def main() -> int:
                 "compact/narrow treatment instead of filling the full page width."
             ),
         })
+    if variable_hue_mismatches:
+        issues.append({
+            "kind": "variable_name_hue_mismatch",
+            "severity": "warning",
+            "count": len(variable_hue_mismatches),
+            "samples": variable_hue_mismatches,
+            "note": (
+                "CSS variable names contain a color word that contradicts the "
+                "actual hue of the value. Use semantic names (--primary, --accent) "
+                "instead of hue-literal names."
+            ),
+        })
+    if hardcoded_orphans:
+        issues.append({
+            "kind": "hardcoded_color_drift",
+            "severity": "warning",
+            "count": len(hardcoded_orphans),
+            "samples": hardcoded_orphans[:6],
+            "note": (
+                "Hex colors in CSS rules outside :root do not match any declared "
+                "custom property. Replace with var(--...) references for theme consistency."
+            ),
+        })
+    if grid_breakpoint_issues:
+        issues.append({
+            "kind": "grid_missing_responsive_breakpoint",
+            "severity": "warning",
+            "count": len(grid_breakpoint_issues),
+            "samples": grid_breakpoint_issues,
+            "note": (
+                "Grids with >4 columns need a @media (max-width: 960px) breakpoint "
+                "that reduces columns. Items may be too narrow on medium screens."
+            ),
+        })
+    if paired_figure_issues:
+        issues.append({
+            "kind": "paired_figure_alignment_risk",
+            "severity": "warning",
+            "count": len(paired_figure_issues),
+            "samples": paired_figure_issues,
+            "note": (
+                "Paired figure containers use align-items: start/baseline which "
+                "causes height misalignment. Use align-items: stretch with inner "
+                "flexbox + object-fit: contain."
+            ),
+        })
     if clone_hits:
         issues.append({
             "kind": "possible_template_clone",
@@ -758,6 +995,10 @@ def main() -> int:
         "figure_layout_risks": figure_layout_risks,
         "mixed_ratio_rows": mixed_ratio_rows,
         "narrow_table_risks": narrow_table_risks,
+        "variable_hue_mismatches": variable_hue_mismatches,
+        "hardcoded_color_orphans": hardcoded_orphans,
+        "grid_breakpoint_issues": grid_breakpoint_issues,
+        "paired_figure_issues": paired_figure_issues,
         "clone_hits": clone_hits,
         "issues": issues,
         "summary": {

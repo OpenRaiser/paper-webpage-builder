@@ -46,3 +46,25 @@ Prefer 5-9 high-signal visuals:
 - Human evaluation or consistency plot.
 
 Avoid showing every figure. Exclude prompt screenshots and appendix-only details unless specifically requested.
+
+## Grid Density Rule
+
+- Grids with more than 4 columns MUST include a `@media (max-width: 960px)` rule that reduces to at most 3 columns, and a `@media (max-width: 720px)` that reduces to 1 or 2 columns.
+- Any card or grid item narrower than 180px at any common viewport (360-1440px) is a layout defect — test by calculating `container_width / column_count` at each breakpoint.
+- When items have short labels (2-3 words), 3-4 columns is the practical maximum for readability on medium screens.
+- Responsive tests: mentally evaluate grid density at 360px, 768px, 960px, and 1440px before finishing the layout.
+
+## Footer
+
+- Logo strip: all logos use a fixed `height` (recommend 48px) with `object-fit: contain` for uniform visual weight. Never let logos inherit their natural (often wildly different) heights.
+- Footer links use the same muted color system as navigation secondary links.
+- Keep footer compact — one row of logos, one row of links/copyright, not elaborate multi-section footers for a single-page academic site.
+
+## Paired Figures
+
+When placing two figures side-by-side:
+
+- Compare their aspect ratios first. If max/min > 1.25, prefer stacking or a main-figure-plus-notes composition over equal-width columns.
+- If they must share a row despite ratio mismatch, use: `display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch;` with inner flexbox columns and `object-fit: contain` on images. This ensures both cells fill equal height and images center within their space.
+- Never use `align-items: start` for paired figures with different heights — it leaves the shorter figure floating at the top with blank space below.
+- Captions below each figure should align at the same baseline; the stretch layout achieves this naturally.
