@@ -10,7 +10,7 @@ Use the paper's own narrative, not a fixed template. These patterns are defaults
 - Dataset/Benchmark: data construction pipeline, split/statistics, taxonomy/category figure, key table.
 - Results: main result table in full when it is central; benchmark comparison table when it supports the paper's novelty claim; compact chart or takeaway cards; appendix figures if useful.
 - Case Study: one qualitative figure, error analysis, human study or alignment plot.
-- Citation: BibTeX draft with a warning if arXiv/venue data is not final.
+- Citation: BibTeX/code block, optional copy button, and a small citation-status note if arXiv/venue data is not final. Do not duplicate hero resource buttons here.
 
 ## Table Handling
 
@@ -22,6 +22,8 @@ Tables should enter the webpage when they carry the core claim.
 - Dataset stats: include a compact web table or metric grid, but preserve all dimensions that support the claim.
 - Ablations: include when the user asks for completeness, the paper's method depends on them, or the abstract/conclusion cites them.
 - Large tables: keep them statically readable; use wider modules, grouped columns, or multiple complete sub-tables instead of horizontal scroll. Keep sticky headers if practical, group rows by model family, highlight the proposed method and best values.
+- Medium explanatory tables with 4-6 columns should usually use full module width when headers or values are long. Do not apply a narrow/compact max-width blindly.
+- Short code/category columns such as `Family`, `Active stages`, `Tier`, `Rank`, stage IDs, objective IDs, and compact labels should be centered and often `white-space: nowrap`; long explanation columns should remain left-aligned.
 - If a table is too wide, split it by metric group or model family while preserving all rows and values.
 - If a figure duplicates a table, the table can be represented visually only when all values remain inspectable or a linked full table is present.
 
@@ -56,6 +58,7 @@ Avoid showing every figure. Exclude prompt screenshots and appendix-only details
 
 ## Footer
 
+- Institution, lab, project, and partner logos belong here, not in Citation.
 - Logo strip: all logos use a fixed `height` (recommend 48px) with `object-fit: contain` for uniform visual weight. Never let logos inherit their natural (often wildly different) heights.
 - Footer links use the same muted color system as navigation secondary links.
 - Keep footer compact — one row of logos, one row of links/copyright, not elaborate multi-section footers for a single-page academic site.
@@ -65,6 +68,14 @@ Avoid showing every figure. Exclude prompt screenshots and appendix-only details
 When placing two figures side-by-side:
 
 - Compare their aspect ratios first. If max/min > 1.25, prefer stacking or a main-figure-plus-notes composition over equal-width columns.
-- If they must share a row despite ratio mismatch, use: `display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch;` with inner flexbox columns and `object-fit: contain` on images. This ensures both cells fill equal height and images center within their space.
-- Never use `align-items: start` for paired figures with different heights — it leaves the shorter figure floating at the top with blank space below.
-- Captions below each figure should align at the same baseline; the stretch layout achieves this naturally.
+- When aspect ratios are compatible, use equal-width columns with natural image height (`width: 100%; height: auto`) and align captions/text, not image boxes.
+- Do not use `object-fit: contain` on primary paper figures to force equal-height cards. That creates blank space and weakens inspectability.
+- If caption alignment matters, use a caption/text rhythm or stack the figures; reserve fixed-height `object-fit: contain` treatments for thumbnails, icons, logos, and bounded non-primary media.
+
+## Citation
+
+- Keep the Citation module narrow and predictable: heading, BibTeX/code block, optional copy button, and at most one short muted note.
+- Strip internal extraction comments from the displayed BibTeX.
+- Use a small pending-verification hint for draft metadata instead of a warning banner.
+- Do not include `Project resources`, Code/Dataset buttons, or institution logos in Citation.
+- Do not invent license claims. Show license only when verified from source files or user-provided links.

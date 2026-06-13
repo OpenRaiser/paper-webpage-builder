@@ -64,6 +64,8 @@ Background options are choices, not defaults:
 - Keep dense operational/benchmark pages compact and scannable.
 - Ensure long tables remain statically readable on mobile and desktop; do not rely on horizontal scrolling or clipping. Split/group columns or use multiple full sub-tables when a single table is too wide.
 - Size tables by density: two- or three-column tables should use a `compact`/`narrow` treatment with a capped column width, while central result tables with many columns should use full-width static modules, grouped columns, or multiple complete sub-tables.
+- Size 4-6 column explanatory tables by header length and text density rather than a global compact max-width. If short headers such as `Active stages` or `Family` wrap awkwardly, allocate full module width and add explicit `colgroup` widths.
+- Center short categorical/ordinal columns (`Family`, `Active stages`, `Tier`, `Rank`, `Best config.`, compact stage/objective codes) while keeping long mechanism, explanation, and caption-like columns left-aligned.
 - Do not leave a narrow table isolated inside a full-width band with a large empty area to its right. Pair it with a related figure, metric cards, explanatory notes, or place it in a visibly constrained column so the unused space reads as layout, not an accident.
 
 ## Validation Checklist
@@ -74,7 +76,10 @@ Background options are choices, not defaults:
 - Figure containers follow the actual figure ratio; no large empty areas are introduced by fixed dimensions, equal-height grids, or mismatched `object-fit: contain` usage.
 - Figures shown side-by-side have compatible ratios, or the layout uses explanatory text/table content to balance the row rather than forcing image boxes to match.
 - Low-column-count tables are not stretched across the full page unless the surrounding text or figure composition justifies it.
+- Table headers do not wrap awkwardly when the header is short and semantically atomic.
 - Narrow tables are paired or constrained; they should not create a large blank region on the right side of the section.
+- Citation contains only citation content. Project-resource buttons are not duplicated there when the hero/header already includes them.
+- Institution/lab logos appear in a compact footer/partners strip, not inside Citation cards.
 - The background and palette can be traced to the target paper, not to a prior generated page.
 - Mobile navigation works.
 - Text does not overlap figures/cards/buttons.
@@ -116,6 +121,21 @@ reference those variables rather than hardcoded hex values:
   the same visual weight.
 - Footer links use the same muted color system as navigation secondary items.
 - Do not let logos inherit their natural (often wildly different) heights.
+- Do not place institution or partner logos inside Citation. Citation and
+  footer/partners are separate modules.
+
+## Citation
+
+- Citation modules should be small and predictable: heading, BibTeX/code block,
+  optional copy button, and at most one short muted note about pending citation
+  fields or verified license.
+- Do not display internal `% NOTE:` extraction comments in the user-facing
+  BibTeX block.
+- Do not use warning banners for missing venue/year; they make the page look
+  broken. Use a small inline hint when needed.
+- Do not invent license text. Only show license text when verified from a
+  LICENSE file, paper source, or user-provided link.
+- Do not repeat Code/Dataset/Project buttons already shown in the hero/header.
 
 ## Measurable Criteria
 
@@ -160,13 +180,11 @@ checks. Where applicable, run:
   at max-width ≤ 960px that reduces to at most 3 columns. Any grid item
   narrower than 180px at viewports in the 360-1440px range is a layout
   defect. The drift check flags grid rules missing responsive breakpoints.
-- Paired-figure alignment: when two figures are placed side-by-side in a
-  grid or flexbox row, use `align-items: stretch` with inner flexbox +
-  `object-fit: contain` (not `align-items: start`) so both figures fill
-  equal height regardless of aspect ratio. The manifest includes `width`,
-  `height`, and `aspect_ratio` fields; the drift check compares ratios of
-  figures sharing a `.paired-figures` / `.figure-row` container and flags
-  spread > 1.25 without stretch alignment.
+- Paired-figure alignment: primary paper figures should preserve natural image
+  height. Pair figures only when their aspect ratios are compatible; otherwise
+  stack them or use a main-figure-plus-notes composition. `object-fit: contain`
+  is appropriate for logos, icons, thumbnails, and bounded non-primary media,
+  not for core paper figures used as evidence.
 - CSS variable naming: variable names containing a color-word (green, blue,
   red, orange, purple, yellow, teal, cyan, pink) where the actual hue
   contradicts the name are flagged as `variable_name_hue_mismatch`.
