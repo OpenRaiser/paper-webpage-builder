@@ -1,0 +1,4 @@
+# Keep showcase-only material visible in the repository, but omit it from
+# GitHub "Download ZIP" archives and `git archive` outputs.
+README.md export-ignore
+assets/brand/** export-ignore

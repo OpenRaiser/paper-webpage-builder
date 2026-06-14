@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 220" role="img" aria-labelledby="title desc">
+  <title id="title">Paper Webpage Builder logo</title>
+  <desc id="desc">Logo lockup for the Paper Webpage Builder skill.</desc>
+  <defs>
+    <linearGradient id="webGradient" x1="88" y1="56" x2="204" y2="178" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2563a8"/>
+      <stop offset="1" stop-color="#41a88a"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="9" flood-color="#14243a" flood-opacity="0.14"/>
+    </filter>
+  </defs>
+
+  <rect width="760" height="220" rx="28" fill="#ffffff"/>
+  <g transform="translate(30 30)">
+    <rect width="160" height="160" rx="36" fill="#f7fbff"/>
+    <path d="M18 26h56l27 27v75H18z" fill="#ffffff" stroke="#d7e3ef" stroke-width="5" filter="url(#softShadow)"/>
+    <path d="M74 26v27h27" fill="#dcecff" stroke="#d7e3ef" stroke-width="5" stroke-linejoin="round"/>
+    <path d="M34 62h36M34 78h46M34 94h32" fill="none" stroke="#5f7188" stroke-width="6" stroke-linecap="round"/>
+    <rect x="34" y="108" width="50" height="10" rx="5" fill="#e06020"/>
+    <rect x="62" y="45" width="86" height="78" rx="13" fill="url(#webGradient)" filter="url(#softShadow)"/>
+    <rect x="70" y="54" width="70" height="13" rx="5" fill="#ffffff" opacity="0.96"/>
+    <rect x="72" y="78" width="33" height="27" rx="5" fill="#ffffff" opacity="0.94"/>
+    <path d="M78 99l8-9 6 5 7-10 5 14z" fill="#41a88a"/>
+    <rect x="112" y="78" width="26" height="5" rx="2.5" fill="#ffffff"/>
+    <rect x="112" y="89" width="26" height="5" rx="2.5" fill="#ffffff" opacity="0.76"/>
+    <rect x="112" y="100" width="18" height="5" rx="2.5" fill="#ffffff" opacity="0.76"/>
+    <path d="M45 132l19-8-7 19-5-8z" fill="#14243a"/>
+  </g>
+
+  <g transform="translate(230 61)">
+    <text x="0" y="42" fill="#14243a" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="40" font-weight="800">Paper Webpage Builder</text>
+    <text x="0" y="82" fill="#5f7188" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="19" font-weight="500">Overleaf source to polished academic project page</text>
+    <g transform="translate(0 108)">
+      <rect width="102" height="30" rx="15" fill="#edf7ff" stroke="#d7e3ef"/>
+      <text x="51" y="20" text-anchor="middle" fill="#2563a8" font-family="Inter, ui-sans-serif, system-ui" font-size="13" font-weight="750">paper.tex</text>
+      <rect x="116" width="84" height="30" rx="15" fill="#f5f8f6" stroke="#cfe5db"/>
+      <text x="158" y="20" text-anchor="middle" fill="#2e7f68" font-family="Inter, ui-sans-serif, system-ui" font-size="13" font-weight="750">figures</text>
+      <rect x="214" width="82" height="30" rx="15" fill="#fff4ea" stroke="#f0d4bd"/>
+      <text x="255" y="20" text-anchor="middle" fill="#b95118" font-family="Inter, ui-sans-serif, system-ui" font-size="13" font-weight="750">tables</text>
+      <rect x="310" width="106" height="30" rx="15" fill="#f7fbff" stroke="#d7e3ef"/>
+      <text x="363" y="20" text-anchor="middle" fill="#14243a" font-family="Inter, ui-sans-serif, system-ui" font-size="13" font-weight="750">index.html</text>
+    </g>
+  </g>
+</svg>
