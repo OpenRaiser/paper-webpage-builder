@@ -6,14 +6,14 @@
 
 这个 Skill 给 Codex/Claude Code 这类 agent 使用。用户从 Overleaf 下载论文源码包或 PDF 后，把文件夹交给 agent，agent 会读取论文内容、整理图表和链接，生成一个完整的 `index.html` 项目主页，并做基础验证。
 
-## 真实案例
+## 示例项目
 
 这些项目主页都来自这个 Skill 的实际生成或迭代流程：
 
-| [PAGER](https://openraiser.github.io/Pager/) | [ProDa](https://openraiser.github.io/ProDa/) |
+| <div align="center"><strong><a href="https://openraiser.github.io/Pager/">PAGER</a></strong></div> | <div align="center"><strong><a href="https://openraiser.github.io/ProDa/">ProDa</a></strong></div> |
 | --- | --- |
 | [![PAGER project page](assets/brand/examples/pager.png)](https://openraiser.github.io/Pager/) | [![ProDa project page](assets/brand/examples/proda.png)](https://openraiser.github.io/ProDa/) |
-| [CoW-Bench](https://openraiser.github.io/CoW-Bench/) | [MoTiF](https://openraiser.github.io/MoTiF/) |
+| <div align="center"><strong><a href="https://openraiser.github.io/CoW-Bench/">CoW-Bench</a></strong></div> | <div align="center"><strong><a href="https://openraiser.github.io/MoTiF/">MoTiF</a></strong></div> |
 | [![CoW-Bench project page](assets/brand/examples/cow-bench.png)](https://openraiser.github.io/CoW-Bench/) | [![MoTiF project page](assets/brand/examples/motif.png)](https://openraiser.github.io/MoTiF/) |
 
 ## 适合什么场景
@@ -106,7 +106,7 @@ assets/
 
 ## 维护者说明
 
-这是一个 `sit` 管理的 Skill Package。修改 `skill.yaml`、`SKILL.md`、`prompts/`、`schemas/`、`tests/`、`scripts/`、`assets/`、`references/` 或 `deps.yaml` 后，按仓库约定运行：
+这是一个 [Sit](https://github.com/OpenRaiser/Sit) 管理的 Skill Package。需要安装或了解 `sit` 时，参考 [OpenRaiser/Sit](https://github.com/OpenRaiser/Sit)。修改 `skill.yaml`、`SKILL.md`、`prompts/`、`schemas/`、`tests/`、`scripts/`、`assets/`、`references/` 或 `deps.yaml` 后，按仓库约定运行：
 
 ```bash
 sit validate
