@@ -6,12 +6,6 @@
 
 这个 Skill 给 Codex/Claude Code 这类 agent 使用。用户从 Overleaf 下载论文源码包或 PDF 后，把文件夹交给 agent，agent 会读取论文内容、整理图表和链接，生成一个完整的 `index.html` 项目主页，并做基础验证。
 
-品牌资产：
-
-- [Logo mark](assets/brand/logo-mark.svg)
-- [Logo lockup](assets/brand/logo-lockup.svg)
-- [Promo card](assets/brand/promo-card.svg)
-
 ## 真实案例
 
 这些项目主页都来自这个 Skill 的实际生成或迭代流程：
