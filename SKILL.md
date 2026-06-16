@@ -22,19 +22,26 @@ Two failure modes to actively avoid:
 
 1. Inspect inputs before editing.
    - Locate paper source, PDF, figures, logos, existing `template.html`, and target `index.html`.
-   - Run `scripts/scan_paper.py <paper.tex>` when a TeX source exists. Multi-file projects are followed via `\input`/`\include` automatically.
+   - Run `scripts/scan_paper.py <paper.tex>` when a TeX source exists. Multi-file projects are followed via `\input`/`\include` automatically. This gives the skeleton (title, authors, captions, table/figure metadata, links) — not the argument.
+   - Run `scripts/extract_sections.py <paper.tex>` to read the body prose of every section. The skeleton is not enough: designing from `scan_paper.py` alone is the main cause of shallow pages with abstract-paraphrased copy and invented headings. Read this output in full (use `--full` for truncated sections).
    - Run `scripts/scan_pdf.py <paper.pdf>` when only a PDF is available; it produces the same shape of inventory (title, authors, abstract, sections, figure/table captions, links).
    - Run `scripts/extract_tables.py <paper.tex>` to dump every table (caption, label, header rows, data rows) as JSON. Use this to seed the table ledger instead of eyeballing the .tex.
    - Build a table ledger before designing: caption, label, section, whether it is main evidence, and whether it must appear fully on the page.
    - Identify important tables as well as figures; main results, benchmark comparisons, dataset statistics, and ablations usually belong on the page.
 
-2. Build a content map.
+2. Read deeply and build a Paper Brief.
+   - This step is mandatory and comes before any visual or copy decision. Follow `references/paper_reading.md`.
+   - From the section prose, write an explicit eight-part Brief in working notes: thesis (as a claim), problem, core idea/name, how it works (2-4 stages), evidence map (what each central table/figure proves), headline numbers (each with its comparison), honest limits, and audience/tone.
+   - Do not invent any part. If a part cannot be filled from the extracted text, read more rather than guessing.
+   - All later page copy (hero subtitle, TL;DR, section headings, result framing) must derive from this Brief, not from the abstract directly. Section headings must be claims, not academic labels; never use "the paper argues/proposes/presents" phrasing; never show a number without its comparison or a central table without a one-line "why this matters" framing.
+
+3. Build a content map.
    - Extract title, authors, affiliations, abstract claim, contributions, links, dataset stats, method description, main results, case studies, citation.
    - Map every central table to a page module. If a central table is too large, plan grouped columns, multiple full sub-tables, or a larger static table module rather than dropping rows or adding horizontal scroll.
    - Decide modules before writing. Typical modules: Hero, Motivation, Method, Dataset/Benchmark, Results, Case Study, Citation.
    - Read `references/module_patterns.md` when choosing sections or table placement.
 
-3. Prepare assets.
+4. Prepare assets.
    - Prefer paper-provided figures over generic visuals.
    - Convert figures to web assets with `scripts/convert_figures.py <source_images_dir> <target_figures_dir>` (the legacy `convert_figures.sh` is now a shim around it). The script handles multi-page PDFs, `.eps`, `.svg` passthrough, raster passthrough, and writes a `figures.manifest.json` that records source→output mapping plus an empty `alt` field per asset for the LLM to fill.
    - Copy logos and paper PDF into the webpage output folder when useful.
@@ -45,7 +52,7 @@ Two failure modes to actively avoid:
      - institution or partner logos belong in the footer logo strip only.
    - If the paper has no suitable project icon, create or request a simple flat project mark before finalizing the page. It must remain readable at favicon size and should not reuse a dense paper figure.
 
-4. Generate the citation block.
+5. Generate the citation block.
    - Run `scripts/extract_citation.py <paper.tex> [--pdf paper.pdf]` and embed the produced BibTeX as the page's citation default.
    - Preserve the leading `% NOTE:` comments verbatim; they document fields that were inferred or guessed (year, venue, authors).
    - When notes indicate missing venue/year, add a SINGLE small inline hint (e.g., a muted footnote or tooltip "Citation fields pending verification") rather than a full warning banner. Never add a red/yellow `.warn` div or multi-line warning block for draft citations — it reads as broken, not cautious.
@@ -56,7 +63,7 @@ Two failure modes to actively avoid:
    - Do not invent a license statement. Only show a license sentence when a LICENSE file, paper source, or user-provided link verifies it.
    - Institution, lab, and partner logos must be rendered below the page content in a compact footer/partners strip, not inside the Citation module.
 
-5. Design the page around the paper.
+6. Design the page around the paper.
    - Derive colors, background, spacing, figure framing, and motifs from the paper's key figures and domain.
    - First list the paper-specific visual cues, then choose the background. A plain surface, soft paper tone, lab-notebook grid, dark canvas, figure-derived gradient, or no visible texture are all valid; none is the default.
    - Choose a paper-specific hero strategy before writing CSS. The hero is a narrative decision, not a default two-column layout. Valid strategies include:
@@ -73,7 +80,7 @@ Two failure modes to actively avoid:
    - Keep background transitions coherent across sections. Avoid abrupt dark-to-light jumps unless the entire page system intentionally supports that contrast.
    - Read `references/design_principles.md` when deciding visual style or revising design feedback. The "Measurable Criteria" section there names the thresholds the design-drift check enforces.
 
-6. Implement the webpage.
+7. Implement the webpage.
    - Start from `assets/single-page-template.html`. It includes semantic landmarks (`header`/`nav`/`main`/`footer`), a skip-link, a `prefers-reduced-motion` fallback, a CJK-friendly font stack, and the `{{LANG}} {{TITLE}} {{DESCRIPTION}} {{CANONICAL_URL}} {{OG_IMAGE}} {{JSONLD}}` placeholders. Fill them with `scripts/render_template.py` (or `scripts/inject_metadata.py --inplace` if you only need to refresh the head block of an existing page).
    - Set `<html lang="...">` to the paper's language (BCP-47: `en`, `zh-CN`, `ja`, `ko`, etc.); the scan scripts do not auto-detect this. For CJK papers keep the bundled font stack and add `lang` attributes around any embedded English titles so browsers pick the right glyphs.
    - Generate the head metadata once via `scripts/inject_metadata.py --title ... --description ... --canonical ... --og-image ... --author ...` and pipe its `render-values` JSON into `render_template.py`. Use `--arxiv` / `--doi` when known so the ScholarlyArticle JSON-LD includes a stable identifier.
@@ -87,7 +94,7 @@ Two failure modes to actively avoid:
      - many-column result tables: use full-width responsive/static table treatment with grouped columns or row-card mobile fallback.
    - Avoid header wrapping for short semantic headers such as `Active stages`, `Family`, `Tier`, `Rank`, `Metric`, and `Scenario`. Give those columns enough width and use `white-space: nowrap` when values are short.
    - Center short categorical/ordinal columns such as `Family`, `Active stages`, `Tier`, `Rank`, `Best config.`, and compact stage/objective codes. Keep long mechanism/explanation columns left-aligned.
-   - Include full central tables as static readable content, with sticky headers when useful, grouped rows/columns when needed, and highlights for the proposed method or best values. Tag each rendered `<table>` (or its wrapping `<section>`) with `data-tex-label="<label>"` so step 7 can reconcile it.
+   - Include full central tables as static readable content, with sticky headers when useful, grouped rows/columns when needed, and highlights for the proposed method or best values. Tag each rendered `<table>` (or its wrapping `<section>`) with `data-tex-label="<label>"` so step 8 can reconcile it.
    - Keep each table visually contained by its white/card/table wrapper. If a table is wider than the module, redesign the module: allocate more width, split/group columns into complete sub-tables, or reduce density while staying readable. Do not use `overflow-x:auto/scroll`, `overflow:hidden`, fixed heights, clipped cards, text fades, or partial table previews.
    - Use charts only when they clarify a key result beyond the paper figures.
    - Avoid hidden dependency on the source paper directory; generated page should work from the webpage folder.
@@ -97,7 +104,7 @@ Two failure modes to actively avoid:
    - Grids with >4 columns must include a `@media (max-width: 960px)` breakpoint that reduces to max 3 columns. Verify no grid item is narrower than 180px at any viewport 360-1440px.
    - Paired primary paper figures should use natural image height. Use `align-items: start` or baseline-aligned captions when aspect ratios are compatible; if aspect ratios differ substantially, stack the figures or redesign the row. Reserve `object-fit: contain` for logos, icons, thumbnails, and footer marks, not for primary paper figures.
 
-7. Validate.
+8. Validate.
    - Run `scripts/check_webpage_links.py <index.html> --full` for the broader lint: missing `src`/`href`/`data-figure`, CSS `url(...)`, `srcset`, `<source>`/`<video poster>`/`preload`, `og:image`/`twitter:image`, broken `#fragment` targets, duplicate ids, missing `alt`/`title` on `<img>`/`<iframe>`, and path-traversal hrefs that resolve outside the page directory. Use `--json` when you need a machine-readable report.
    - Reconcile the table ledger against the page with `scripts/reconcile_tables.py --ledger <ledger.json> --html <index.html>`. The ledger is the JSON produced by `extract_tables.py` in step 1; tag any HTML `<table>` (or its wrapping `<section>`) with `data-tex-label="<label>"` to enable strict matching. The script flags missing, abbreviated, and column-stripped tables; treat any "MISSING(central)" or "abbrev" line as a blocker.
    - Run `scripts/check_table_fit.py <index.html> --json` to verify rendered tables are not clipped, do not spill outside their visual containers, and do not require horizontal scrolling. Treat any error as a blocker; this means the first generated page design is wrong and must be repaired before delivery.
@@ -129,12 +136,12 @@ When asked to upload a generated webpage to GitHub Pages or a project repo:
 - Never force-push or delete remote branches unless the user explicitly asks for that exact operation.
 - After pushing, verify with `git ls-remote --heads <repo>` and report the branch names and commit hashes.
 
-8. Use the agent workbench when the user wants an interactive UI, ongoing progress, preview, or region-level repair.
+9. Use the agent workbench when the user wants an interactive UI, ongoing progress, preview, or region-level repair.
    - Start the local workbench with `python3 scripts/webpage_workbench.py --port 8765`.
    - The workbench is a chat interface over the real skill workflow. The user should be able to say "build a webpage for this paper" and the backend agent should perform this workflow, not generate a generic scaffold.
    - The backend runs an agent command in the background (default: local `codex exec` when available; override with `--agent-command` for Claude or another runner), tracks progress, logs output, and mounts the generated `index.html` in the preview pane.
    - Use the iframe overlay to mark a visual defect. The workbench saves `annotation.json`, `context.html`, and `repair_prompt.md` under `<paper-project>/.paper-webpage-builder/annotations/<timestamp>/`, then includes that context in the next chat turn when requested.
-   - Treat saved DOM selectors, bounding boxes, computed styles, and user instruction as the repair scope. Make the smallest local HTML/CSS/JS change that resolves the selected defect, then rerun the checks in step 7.
+   - Treat saved DOM selectors, bounding boxes, computed styles, and user instruction as the repair scope. Make the smallest local HTML/CSS/JS change that resolves the selected defect, then rerun the checks in step 8.
    - Read `references/visual_workbench.md` for the exact closed-loop contract.
 
 ## Output Expectations
@@ -152,13 +159,15 @@ The output is validated against `schemas/output.schema.json`; `keywords` and `qu
 
 ## Reference Files
 
+- `references/paper_reading.md`: deep-reading protocol and the Paper Brief that all page copy must derive from. Read this before designing.
 - `references/module_patterns.md`: section patterns, paper-content extraction targets, and table handling.
 - `references/design_principles.md`: visual design rules for paper webpages.
 - `references/visual_workbench.md`: local UI loop for previewing generated pages, selecting visual defects, and handing region context to an agent.
 
 ## Scripts
 
-- `scripts/scan_paper.py`: summarize TeX title/authors/abstract/sections/figures/tables/links; follows `\input`/`\include`. Emits an explicit warning when the file is not UTF-8 (with the fallback encoding it used).
+- `scripts/scan_paper.py`: summarize TeX title/authors/abstract/sections/figures/tables/links; follows `\input`/`\include`. Emits an explicit warning when the file is not UTF-8 (with the fallback encoding it used). Produces the skeleton only — not section body prose.
+- `scripts/extract_sections.py`: print the cleaned body prose of every section (drops float/equation noise, keeps citations as `[cite]` and contribution lists). Read this to understand the paper's argument before designing; pair it with `references/paper_reading.md`.
 - `scripts/scan_pdf.py`: PDF-only inventory in the same shape as `scan_paper.py` (used for `kind: pdf_with_assets`).
 - `scripts/extract_tables.py`: dump every LaTeX table (caption/label/header/data rows) as JSON for the table ledger.
 - `scripts/extract_citation.py`: produce a best-effort BibTeX draft with explicit notes for unverified fields.
