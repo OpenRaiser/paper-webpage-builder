@@ -12,6 +12,10 @@ Use the paper's own narrative, not a fixed template. These patterns are defaults
 - Case Study: one qualitative figure, error analysis, human study or alignment plot.
 - Citation: BibTeX/code block, optional copy button, and a small citation-status note if arXiv/venue data is not final. Do not duplicate hero resource buttons here.
 
+Hero is a content inventory, not a mandated layout. Do not interpret the Hero list as a requirement to place title, authors, links, metrics, and a key figure into one two-column block. Select only the above-fold elements that communicate the paper's central claim; move secondary evidence to Motivation, Method, Dataset/Benchmark, Results, or Case Study.
+
+Avoid generic split heroes where oversized title text occupies the left column and a paper figure/card occupies the right column. Use that composition only when the paper's own lead visual is meant to be inspected in the first viewport and the layout remains balanced. Prefer a paper-specific hero mode: thesis-first, figure-led, benchmark-dashboard, system-workflow, or brand-led.
+
 ## Table Handling
 
 Tables should enter the webpage when they carry the core claim.

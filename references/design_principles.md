@@ -35,6 +35,7 @@ Treat the following as clone indicators that require revision:
 - the same card-heavy rhythm when the target paper is table- or figure-led;
 - color accents not found in, or naturally derived from, the paper figures;
 - a hero that copies another page's composition instead of foregrounding this paper's strongest figure or result.
+- a generic split hero with oversized title text on the left and a right-side paper figure/card, unless the target paper's own evidence hierarchy specifically calls for that composition.
 
 ## Background Coherence
 
@@ -55,6 +56,8 @@ Background options are choices, not defaults:
 ## Layout
 
 - Put the actual project content above the fold: title, claim, links, headline metrics, and a key figure.
+- The items above are a content checklist, not a required hero composition. Do not default to a large text column plus a right-side image card. Before implementing the hero, choose a paper-specific strategy: thesis-first, figure-led, benchmark-dashboard, system-workflow, or brand-led.
+- If the strongest visual is a pipeline, benchmark table, case-study sequence, or diagnostic plot, it often works better as the first full-width evidence module below a concise hero rather than as a small right-side card.
 - Use full-width figures when details matter.
 - Preserve each paper figure's intrinsic aspect ratio in the page layout. Do not force unrelated figures into equal-height or equal-aspect-ratio cards just to align a grid; that creates large empty bands around wide/tall diagrams and makes the figure look broken.
 - Avoid `object-fit: contain` inside fixed-height figure cards except in zoom modals or intentionally bounded thumbnails. Prefer `img { width: 100%; height: auto; }`, group figures with similar aspect ratios, or let masonry/stacked sections keep natural heights.

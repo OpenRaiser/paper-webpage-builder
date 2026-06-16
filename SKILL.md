@@ -14,6 +14,7 @@ Do not mechanically clone an existing webpage. Use prior pages only as reference
 Two failure modes to actively avoid:
 
 - Do not reuse a background system from another paper page by default. Grids, coordinate paper, dark sections, gradients, or canvas textures are allowed only when they are supported by the target paper's own figures, domain, or visual language.
+- Do not default to a split hero with oversized title text on the left and a paper figure/card on the right. This generic composition is allowed only when the paper has a product-like teaser image that clearly belongs in the first viewport and the whole composition is justified by the paper's evidence hierarchy.
 - Do not summarize away central evidence. If the paper's main claim depends on a main experiment table, benchmark comparison table, dataset statistics table, or ablation table, the webpage must include that table in full or provide a clearly equivalent full presentation.
 - Do not show partial or horizontally scrolling tables. Table rows, headers, and cell text must be statically visible; they must not be clipped by smaller white/card containers, fixed-height panels, masks, fades, `overflow:hidden`, or `overflow-x:auto/scroll`. Wide tables should use grouped columns, multiple full sub-tables, readable density reduction, or a larger responsive container while preserving values.
 
@@ -58,6 +59,13 @@ Two failure modes to actively avoid:
 5. Design the page around the paper.
    - Derive colors, background, spacing, figure framing, and motifs from the paper's key figures and domain.
    - First list the paper-specific visual cues, then choose the background. A plain surface, soft paper tone, lab-notebook grid, dark canvas, figure-derived gradient, or no visible texture are all valid; none is the default.
+   - Choose a paper-specific hero strategy before writing CSS. The hero is a narrative decision, not a default two-column layout. Valid strategies include:
+     - thesis-first hero: concise title/claim with evidence modules beginning immediately below the fold;
+     - figure-led hero: one full-width teaser/overview figure with compact title/caption treatment;
+     - benchmark-dashboard hero: compact metrics and primary result evidence, with paper figures deferred to the benchmark/results sections;
+     - system-workflow hero: a short title block followed by a full-width pipeline/workflow band;
+     - brand-led hero: project mark or mascot as identity, with technical figures moved to method/results.
+   - Do not place title, authors, resource buttons, metrics, and a key paper figure into one hero unless the first viewport remains balanced and the figure is truly the paper's lead evidence. Move secondary evidence into Motivation, Method, Benchmark, or Results.
    - Plan figure layout from the actual converted image ratios in `figures.manifest.json`. Wide pipeline/heatmap/table figures, tall case figures, and compact charts should not be forced into one equal-height grid.
    - Avoid fixed-height or fixed-aspect figure cards with `object-fit: contain` for paper figures. Use natural image height (`width: 100%; height: auto`) by default; reserve fixed boxes for icons, logos, thumbnails, or zoom modals.
    - Put figures side-by-side only when their aspect ratios are compatible, or when one side is balanced by text/table content instead of another image. If max/min ratio is above about 1.25, stack them or use a main-figure-plus-notes composition.
